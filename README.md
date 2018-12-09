@@ -1,7 +1,7 @@
 # Event-Logger
-A web app developed with Python using the Flask framework. 
+A web app developed with Python using the Flask framework. Currently in early development.
 
-Currently in early development.
+Read Requirements.txt to see all required libraries
 
 Flask Libraries in use:
 
