@@ -1,0 +1,18 @@
+{% extends 'layout/default.htm.j2' -%}
+
+{% block title -%}Users{% endblock -%}
+
+{% block content -%}
+	<h1>Users</h1>
+	{% if users -%}
+		{% for user in users -%}
+			{% if not loop.last -%}
+				<span><a href="/u/{{ user['username'] }}">{{ user['username'] }}</a>, </span>
+			{% elif loop.last -%}
+				<span><a href="/u/{{ user['username'] }}">{{ user['username'] }}</a></span>
+			{% endif -%}
+		{% endfor -%}
+	{% else -%}
+		<span>No users</span>
+	{% endif -%}
+{% endblock -%}

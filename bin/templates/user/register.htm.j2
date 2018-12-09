@@ -1,0 +1,18 @@
+{% extends 'layout/default.htm.j2' -%}
+
+{% block title -%}Register{% endblock -%}
+
+{% block content -%}
+	{% if not g.user -%}
+	<h1>Register</h1>
+	<form class="auth" action="/auth" method="post">
+		<input type="hidden" name="auth" value="register">
+		<input type="text" name="email" placeholder="Email...">
+		<input type="text" name="username" placeholder="Username...">
+		<input type="password" name="password" placeholder="Password...">
+		<input type="submit" name="Submit">
+	</form>
+	{% else -%}
+	<h1>You are already logged in</h1>
+	{% endif -%}
+{% endblock -%}

@@ -1,0 +1,20 @@
+{% extends 'layout/default.htm.j2' -%}
+
+{% block title -%}Home{% endblock -%}
+
+{% block content -%}
+	{% if post -%}
+		<div class="post">
+			<h3 class="title">{{ post['title'] }}</h3>
+			<p class="body">{{ post['body'] }}</p>
+			<p class="created">{{ post['created'] }}</p>
+			<span><a href="/post/{{ post['id'] }}">comments</a> <a href="/u/{{ post['post_author'] }}">author</a></span>
+			{% if g.user.username == post['post_author'] -%}
+				<span><a href="/post/{{ post['id'] }}/edit">edit</a> <a href="/post/{{ post['id'] }}/delete">delete</a></span>
+			{% endif -%}
+		</div>
+	{% else -%}
+		<p>Post not found</p>
+	{% endif -%}
+
+{% endblock -%}

@@ -1,0 +1,44 @@
+{% extends 'layout/default.htm.j2' -%}
+
+{% block title -%}Home{% endblock -%}
+
+{% block content -%}
+	{% if posts -%}
+		{# if not followed -%}
+			{% for f in followed -%}
+				{% for post in posts -%}
+					{% if post['post_author'] == f.username -%}
+						<div class="post">
+						<h3 class="title">{{ post['title'] }}</h3>
+						<p class="body">{{ post['body'] }}</p>
+						<p>{{ post['created'] }}</p>
+						<span><a href="/post/{{ post['id'] }}">comments</a> <a href="/u/{{ post['post_author'] }}">author</a></span>
+						{% if g.user.username == post['post_author'] or g.admin -%}
+							<span><a href="/post/{{ post['id'] }}/edit">edit</a> <a href="/post/{{ post['id'] }}/delete">delete</a></span>
+						{% endif -%}
+						</div>
+						<br>
+					{% endif -%}
+				{% endfor -%}
+			{ endfor -}
+		{% else -#}
+			{% for post in posts -%}
+				<div class="post">
+				<h3 class="title">{{ post['title'] }}</h3>
+				<p class="body">{{ post['body'] }}</p>
+				<p>{{ post['created'] }}</p>
+				<span><a href="/post/{{ post['id'] }}">comments</a> <a href="/u/{{ post['post_author'] }}">author</a></span>
+				{% if g.user.username == post['post_author'] or g.admin -%}
+					<span><a href="/post/{{ post['id'] }}/edit">edit</a> <a href="/post/{{ post['id'] }}/delete">delete</a></span>
+				{% endif -%}
+				</div>
+				<br>
+			{% endfor -%}
+		{# endif -#}
+	{% else -%}
+		<p>No posts</p>
+	{% endif -%}
+
+{% endblock -%}
+
+

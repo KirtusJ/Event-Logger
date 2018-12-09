@@ -1,0 +1,212 @@
+try:
+	from flask import (
+		render_template, g, redirect, url_for, flash
+	)
+	from bin.models import (
+		db, login_manager
+	)
+	from flask_login import (
+		login_user, logout_user, current_user
+	)
+	from bin.models.user import User
+	from bin.models.post import Post
+	from . import ErrorController
+
+	import functools
+except Exception as e:
+	print(f"Error importing in controllers/UserController.py: {e}")
+
+@login_manager.user_loader
+def user_loader(user_id):
+	""" Loads current_user """
+	return User.query.get(user_id)
+
+def login_required(view):
+	""" Used for authenticating if a user is logged in """
+	@functools.wraps(view)
+	def wrapped_view(**kwargs):
+		if current_user is None:
+			return redirect(url_for('routes/login'))
+		return view(**kwargs)
+	return wrapped_view
+
+def admin_required(view):
+	""" Used for authenticating if a user is an admin """
+	@functools.wraps(view)
+	def wrapped_view(**kwargs):
+		if not g.admin:
+			return ErrorController.error("404"), 404
+		return view(**kwargs)
+	return wrapped_view
+
+def show(_username):
+	""" 
+	Shows specified user profile 
+	Example: /u/<username>
+	Will render this users profile
+	"""
+	try:
+		# An exception is passed if user is null
+		user = User.query.filter_by(username=_username).first()
+	except:
+		user=None
+	try:
+		# An exception is passed if posts is null
+		posts = Post.query.filter_by(post_author=user.username).all()
+	except:
+		posts = None
+
+	# Needed in case it is impossible to pass into the for loops
+	is_following=None
+	followers=None
+	followed=None
+
+	if user is not None:
+		for f in user.followers:
+			followers=user.followers
+			if user.id == f.id:
+				is_following=True
+				break
+		for f in user.followed:
+			followed=user.followed
+
+	return render_template("user/profile.htm.j2", user=user, posts=posts, followers=followers, is_following=is_following, followed=followed)
+
+def login(_username, _password):
+	"""
+	Logs in specified user if all criteria is met
+	1. User exists
+	2. Password is correct
+	3. Is not banned
+	"""
+	try:
+		user = User.query.filter_by(username=_username).first()
+	except:
+		user = None
+	if user is None:
+		flash(u"Username {name} doesn't exist".format(name=_username), 'error')
+		return redirect(url_for('routes.createSessionView'))
+	try:
+		if user.check_password(_username, _password):
+			if "banned" in user.roles:
+				flash(u'Account {name} has been banned'.format(name=_username), 'error')
+				return redirect(url_for('routes.createSessionView'))
+			login_user(user)
+			print(f"User: {user.username} [logged in]")
+			return redirect(url_for('routes.index'))
+	except:
+		flash(u'Incorrect password', 'error')
+		return redirect(url_for('routes.createSessionView'))
+
+def register(_username, _email, _password):
+	"""
+	Registers a user if all criteria is met
+	1. User doesn't exist
+	2. Email is not in use
+	"""
+	username = User.query.filter_by(username=_username).first()
+	email = User.query.filter_by(email=_email).first()
+	if email is not None:
+		flash(u'Email {email} is already in use'.format(email=_email), 'error')
+		return redirect(url_for('routes.createUserView'))
+	if username is not None:
+		flash(u'Username {name} already exists'.format(name=_username), 'error')
+		return redirect(url_for('routes.createUserView'))
+	try:
+		user = User(username=_username, email=_email, roles=f"{User.default_role}")
+		user.set_password(_password)
+	except Exception as e:
+		return ErrorController.error(e)
+	db.session.add(user)
+	db.session.commit()
+	print(f"User: {user.username} [registered]")
+	flash(u"User {name} has been created".format(name=_username))
+	return redirect(url_for('routes.createSessionView'))
+
+def logout():
+	"""
+	Logs out current_user
+	If a session exists
+	"""
+	flash(u"User {name} logged out".format(name=current_user.username))
+	print(f"User: {current_user.username} [logged out]")
+	logout_user()
+	return redirect(url_for('routes.index'))
+
+def ban(_username):
+	"""
+	Handles the banning and unbanning of a user
+	If the route has arrived here, the user has already been authenticated
+	"""
+	try:
+		user = User.query.filter_by(username=_username).first()
+	except:
+		user = None
+	if user is None:
+		flash(u"User doesn't exist", 'error')
+		return redirect(url_for('routes.index'))
+	if "banned" not in user.roles:
+		user.set_role("banned")
+		db.session.add(user)
+		print(f"User: {user.username} [banned]")
+		flash(u"User has been banned")
+	elif "banned" in user.roles:
+		user.set_role("user")
+		db.session.add(user)
+		print(f"User: {user.username} [unbanned]")
+		flash(u"User has been unbanned")
+	db.session.commit()
+	return redirect(url_for("routes.showUser", username=user.username))
+
+def destroy(_username):
+	"""
+	Deletes a user if said user exists
+	If the route has arrived here, the user has already been authenticated
+	"""
+	try:
+		user = User.query.filter_by(username=_username).first()
+	except:
+		user = None
+	if user is None:
+		flash(u"User doesn't exist", 'error')
+		return redirect(url_for('routes.index'))
+	db.session.delete(user)
+	db.session.commit()
+	print(f"User: {_username} [deleted]")
+	flash(u"User {name} has been deleted".format(name=_usernamea))
+	return redirect(url_for('routes.index'))
+
+def follow(_username):
+	"""
+	Adds a followed specified_user to current_user
+	Adds a follower from current_user to specified_user
+	"""
+	user = User.query.filter_by(username=_username).first()
+	current_user.follow(user)
+	db.session.commit()
+	return redirect(url_for("routes.showUser", username=user.username))
+
+def unfollow(_username):
+	"""
+	Removes a followed specified_user to current_user
+	Removes a follower from current_user to specified_user
+	"""
+	user = User.query.filter_by(username=_username).first()
+	current_user.unfollow(user)
+	db.session.commit()
+	return redirect(url_for("routes.showUser", username=user.username))
+
+def getUser():
+	"""
+	Sets global user variables
+	If current_user exists, g.user does
+	If current_user is an admin, g.user is
+	"""
+	if current_user.is_authenticated:
+		g.user = current_user
+		if "admin" in g.user.roles:
+			g.admin = True
+		else:
+			g.admin = False
+	else:
+		g.user = None

@@ -1,0 +1,19 @@
+{% extends 'layout/default.htm.j2' -%}
+
+{% block title -%}{{ error }}{% endblock -%}
+
+
+{% block content -%}
+	{% if error == "404" -%}
+	<h3>{{ error }}</h3>
+	<h1>The page you were looking for was not found</h1>
+	{% elif error == "403" -%}
+	<h3>{{ error }}</h3>
+	<h1>Forbidden</h1>
+	{% elif error == "405" -%}
+	<h3>{{ error }}</h3>
+	<h1>Method not allowed</h1>
+	{% else -%}
+	<h3>{{ error }}</h3>
+	{% endif -%}
+{% endblock -%}

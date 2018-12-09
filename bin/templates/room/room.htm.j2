@@ -1,0 +1,19 @@
+{% extends 'layout/default.htm.j2' -%}
+
+{% block title -%}Room{% endblock -%}
+
+{% block content -%}
+	{% if room -%}
+		<h1>{{ room['name'] }}</h1>
+		<p>ID: [{{ room['id'] }}]</p>
+		<p>{{ room['description'] }}</p>
+		<p>Owner: [{{ room['owner'] }}]</p>
+		<p>{{ room['created'] }}</p>
+		{% if room['owner'] == g.user.username -%}
+			<span><a href="/room/{{ room['name'] }}/edit">edit room</a></span>
+		{% endif -%}
+	{% else -%}
+		<p>Room not found</p>
+	{% endif -%}
+
+{% endblock -%}

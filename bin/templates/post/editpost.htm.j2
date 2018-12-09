@@ -1,0 +1,15 @@
+{% extends 'layout/default.htm.j2' -%}
+
+{% block title -%}Edit: {{ post['title'] }}{% endblock -%}
+
+{% block content -%}
+	<h1>Edit: {{ post['title'] }}</h1>
+	<form class="PostForm" action="/post/{{ post['id'] }}/edit" method="POST">
+		<input type="hidden" name="post" value="update">
+		<input type="text" name="title" style="width: 400px; margin-bottom: 30px" value="{{ post['title'] }}">
+		<br>
+		<input type="text" name="body" style="width: 400px; margin-bottom: 30px"value="{{ post['body'] }}">
+		<br>
+		<input type="submit" name="Submit">
+	</form>
+{% endblock -%}
