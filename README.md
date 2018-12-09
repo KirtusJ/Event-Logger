@@ -3,7 +3,7 @@ A web app developed with Python using the Flask framework. Currently in early de
 
 Read Requirements.txt to see all required libraries
 
-pip install -r requirements.txt
+- pip install -r requirements.txt
 
 Flask Libraries in use:
 
