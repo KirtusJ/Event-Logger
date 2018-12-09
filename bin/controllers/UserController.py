@@ -139,12 +139,12 @@ def logout():
 	If a session exists
 	"""
 	try:
+		flash(u"User {name} logged out".format(name=current_user.username))
+		print(f"User: {current_user.username} [logged out]")
 		logout_user()
 	except Exception as e:
 		logging.error(f"Error: {e}")
 		return ErrorController.error(e)
-	flash(u"User {name} logged out".format(name=current_user.username))
-	print(f"User: {current_user.username} [logged out]")
 	return redirect(url_for('routes.index'))
 
 def ban(_username):
