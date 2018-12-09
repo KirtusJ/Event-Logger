@@ -1,6 +1,12 @@
 {% extends 'layout/default.htm.j2' -%}
 
-{% block title -%}Room{% endblock -%}
+{% block title -%}
+	{% if room -%}
+		r/{{ room['name'] }}
+	{% else -%}
+		Room not found
+	{% endif -%}
+{% endblock -%}
 
 {% block content -%}
 	{% if room -%}
@@ -13,7 +19,6 @@
 			<span><a href="/room/{{ room['name'] }}/edit">edit room</a></span>
 		{% endif -%}
 	{% else -%}
-		<p>Room not found</p>
+		<h1>Room not found</h1>
 	{% endif -%}
-
 {% endblock -%}

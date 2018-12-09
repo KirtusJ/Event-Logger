@@ -1,6 +1,12 @@
 {% extends 'layout/default.htm.j2' -%}
 
-{% block title -%}Home{% endblock -%}
+{% block title -%}
+	{% if post-%}
+		{{ post['title'] }}
+	{% else -%}
+		Post not found
+	{% endif -%}
+{% endblock -%}
 
 {% block content -%}
 	{% if post -%}

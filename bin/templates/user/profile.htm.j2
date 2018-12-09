@@ -1,86 +1,91 @@
 {% extends 'layout/default.htm.j2' -%}
 
-{% block title -%}Home{% endblock -%}
+{% block title -%}
+	{% if user -%}
+		{{ user['username'] }}'s profile
+	{% else -%}
+		User not found
+	{% endif -%}
+{% endblock -%}
 
 {% block content -%}
 	{% if user -%}
-	<h1>{{ user['username'] }}'s profile</h1>
-	{% if "admin" in user['roles'] -%}
-		<h1 style="color: red">ADMIN</h1>
-	{% endif -%}
-	<span>ID: [{{ user['id'] }}]</span>
-	<p>Roles: {{ user['roles'] }}</p>
-	<p>Email: {{ user['email'] }}</p>
-
-	{% if user['id'] == g.user['id'] -%}
-		<p><a href="/user/edit">edit profile</a></p>
-	{% endif -%}
-	<br>
-	{% if not user['id'] == g.user['id'] -%}
-		{% if is_following -%}
-			<span><a href="/u/{{ user['username'] }}/unfollow">unfollow</a></span>
-		{% else -%}
-			<span><a href="/u/{{ user['username'] }}/follow">follow</a></span>
+		<h1>{{ user['username'] }}'s profile</h1>
+		{% if "admin" in user['roles'] -%}
+			<h1 style="color: red">ADMIN</h1>
 		{% endif -%}
-		{% if g.admin and not "admin" in user['roles'] -%}
-			{% if "banned" not in user['roles'] -%}
-				<span><a href="/u/{{ user['username'] }}/ban">ban</a></span>
-			{% elif "banned" in user['roles'] -%}
-				<span><a href="/u/{{ user['username'] }}/ban">unban</a></span>
-			{% endif -%}
+		<span>ID: [{{ user['id'] }}]</span>
+		<p>Roles: {{ user['roles'] }}</p>
+		<p>Email: {{ user['email'] }}</p>
+	
+		{% if user['id'] == g.user['id'] -%}
+			<p><a href="/user/edit">edit profile</a></p>
 		{% endif -%}
-	{% endif -%}
-	{% if followers -%}
-		<p>Followers:
-		{% for follower in followers -%}
-			{% if not loop.last -%}
-				<span><a href="/u/{{ follower.username }}/">{{ follower.username }}</a>,</span>
-			{% elif loop.last -%}
-				<span><a href="/u/{{ follower.username }}/">{{ follower.username }}</a></span>
+		<br>
+		{% if not user['id'] == g.user['id'] -%}
+			{% if is_following -%}
+				<span><a href="/u/{{ user['username'] }}/unfollow">unfollow</a></span>
+			{% else -%}
+				<span><a href="/u/{{ user['username'] }}/follow">follow</a></span>
 			{% endif -%}
-			
-		{% endfor %}
-		</p>
-	{% else -%}
-	<p>Followers: None</p>
-	{% endif -%}
-	{% if followed -%}
-		<p>Following: 
-		{% for f in followed -%}
-			{% if not loop.last -%}
-				<span><a href="/u/{{ f.username }}/">{{ f.username }}</a>,</span>
-			{% elif loop.last -%}
-				<span><a href="/u/{{ f.username }}/">{{ f.username }}</a></span>
-			{% endif -%}
-		{% endfor -%}
-		</p>
-	{% else -%}
-		<p>Following: None</p>
-	{% endif -%}
-	{% if user['id'] == g.user['id'] -%}
-		<form class="PostForm" action="/post/new" method="POST">
-			<input type="hidden" name="post" value="create">
-			<input type="text" name="title" placeholder="Title...">
-			<input type="text" name="body" placeholder="Content...">
-			<input type="submit" name="Submit">
-		</form>
-	{% endif -%}
-	{% if posts -%}
-		{% for post in posts -%}
-			<div class="post">
-				<h3 class="title">{{ post['title'] }}</h3>
-				<p class="body">{{ post['body'] }}</p>
-				<p class="created">{{ post['created'] }}</p>
-				<span><a href="/post/{{ post['id'] }}">comments</a> <a href="/u/{{ post['post_author'] }}">author</a></span>
-				{% if g.user.username == post['post_author'] or g.admin -%}
-				<span><a href="/post/{{ post['id'] }}/edit">edit</a> <a href="/post/{{ post['id'] }}/delete">delete</a></span>
+			{% if g.admin and not "admin" in user['roles'] -%}
+				{% if "banned" not in user['roles'] -%}
+					<span><a href="/u/{{ user['username'] }}/ban">ban</a></span>
+				{% elif "banned" in user['roles'] -%}
+					<span><a href="/u/{{ user['username'] }}/ban">unban</a></span>
 				{% endif -%}
-			</div>
-			<br>
-		{% endfor -%}
-	{% else -%}
-		<p>No posts</p>
-	{% endif -%}
+			{% endif -%}
+		{% endif -%}
+		{% if followers -%}
+			<p>Followers:
+			{% for follower in followers -%}
+				{% if not loop.last -%}
+					<span><a href="/u/{{ follower.username }}/">{{ follower.username }}</a>,</span>
+				{% elif loop.last -%}
+					<span><a href="/u/{{ follower.username }}/">{{ follower.username }}</a></span>
+				{% endif -%}
+			{% endfor %}
+			</p>
+		{% else -%}
+		<p>Followers: None</p>
+		{% endif -%}
+		{% if followed -%}
+			<p>Following: 
+			{% for f in followed -%}
+				{% if not loop.last -%}
+					<span><a href="/u/{{ f.username }}/">{{ f.username }}</a>,</span>
+				{% elif loop.last -%}
+					<span><a href="/u/{{ f.username }}/">{{ f.username }}</a></span>
+				{% endif -%}
+			{% endfor -%}
+			</p>
+		{% else -%}
+			<p>Following: None</p>
+		{% endif -%}
+		{% if user['id'] == g.user['id'] -%}
+			<form class="PostForm" action="/post/new" method="POST">
+				<input type="hidden" name="post" value="create">
+				<input type="text" name="title" placeholder="Title...">
+				<input type="text" name="body" placeholder="Content...">
+				<input type="submit" name="Submit">
+			</form>
+		{% endif -%}
+		{% if posts -%}
+			{% for post in posts -%}
+				<div class="post">
+					<h3 class="title">{{ post['title'] }}</h3>
+					<p class="body">{{ post['body'] }}</p>
+					<p class="created">{{ post['created'] }}</p>
+					<span><a href="/post/{{ post['id'] }}">comments</a> <a href="/u/{{ post['post_author'] }}">author</a></span>
+					{% if g.user.username == post['post_author'] or g.admin -%}
+						<span><a href="/post/{{ post['id'] }}/edit">edit</a> <a href="/post/{{ post['id'] }}/delete">delete</a></span>
+					{% endif -%}
+				</div>
+				<br>
+			{% endfor -%}
+		{% else -%}
+			<p>No posts</p>
+		{% endif -%}
 	{% else -%}
 		<h1>User doesn't exist</h1>
 	{% endif -%}
