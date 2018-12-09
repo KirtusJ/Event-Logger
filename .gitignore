@@ -2,6 +2,7 @@ migrations/
 tests/
 instance/
 config.py
+console.log
 venv/
 __pycache__/
 *.pyo

@@ -15,6 +15,7 @@ try:
 	
 	from random import choice
 	from string import ascii_uppercase
+	import logging
 except Exception as e:
 	print(f"Error importing in controllers/RoomController.py: {e}")
 
@@ -47,11 +48,12 @@ def create(_name, _description):
 		room = Room(name=_name, description=_description)
 		room.set_owner(g.user.username)
 		room.set_id(''.join(choice(ascii_uppercase) for i in range(12)))
-	except:
+		db.session.add(room)
+		db.session.commit()
+	except Exception as e:
+		logging.error(f"Error: {e}")
 		flash(u"An error has occured", 'error')
 		return render_template('index.rooms.htm.j2')
-	db.session.add(room)
-	db.session.commit()
 	print(f"Room: {room.name} [created]")
 	return redirect(url_for('routes.showRoom', name=_name))
 
@@ -66,8 +68,12 @@ def destroy(_name):
 		room = None
 	if room is not None:
 		if current_user == room.get_owner() or g.admin:
-			db.session.delete(room)
-			db.session.commit()
+			try:
+				db.session.delete(room)
+				db.session.commit()
+			except Exception as e:
+				logging.error(f"Error: {e}")
+				return ErrorController.error(e)
 			print(f"Room: {_name} [deleted]")
 			flash(u"Room {name} has been deleted".format(name=_name))
 			return redirect(url_for('routes.index'))

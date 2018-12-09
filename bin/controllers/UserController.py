@@ -12,6 +12,7 @@ try:
 	from bin.models.post import Post
 	from . import ErrorController
 
+	import logging
 	import functools
 except Exception as e:
 	print(f"Error importing in controllers/UserController.py: {e}")
@@ -19,7 +20,11 @@ except Exception as e:
 @login_manager.user_loader
 def user_loader(user_id):
 	""" Loads current_user """
-	return User.query.get(user_id)
+	try:
+		return User.query.get(user_id)
+	except Exception as e:
+		logging.warning(f"Warning: {e}")
+		pass
 
 def login_required(view):
 	""" Used for authenticating if a user is logged in """
@@ -91,7 +96,11 @@ def login(_username, _password):
 			if "banned" in user.roles:
 				flash(u'Account {name} has been banned'.format(name=_username), 'error')
 				return redirect(url_for('routes.createSessionView'))
-			login_user(user)
+			try:
+				login_user(user)
+			except Exception as e:
+				logging.error(f"Error: {e}")
+				return ErrorController.error(e)
 			print(f"User: {user.username} [logged in]")
 			return redirect(url_for('routes.index'))
 	except:
@@ -116,6 +125,7 @@ def register(_username, _email, _password):
 		user = User(username=_username, email=_email, roles=f"{User.default_role}")
 		user.set_password(_password)
 	except Exception as e:
+		logging.error(f"Error: {e}")
 		return ErrorController.error(e)
 	db.session.add(user)
 	db.session.commit()
@@ -128,9 +138,13 @@ def logout():
 	Logs out current_user
 	If a session exists
 	"""
+	try:
+		logout_user()
+	except Exception as e:
+		logging.error(f"Error: {e}")
+		return ErrorController.error(e)
 	flash(u"User {name} logged out".format(name=current_user.username))
 	print(f"User: {current_user.username} [logged out]")
-	logout_user()
 	return redirect(url_for('routes.index'))
 
 def ban(_username):
@@ -146,16 +160,25 @@ def ban(_username):
 		flash(u"User doesn't exist", 'error')
 		return redirect(url_for('routes.index'))
 	if "banned" not in user.roles:
-		user.set_role("banned")
-		db.session.add(user)
+		try:
+			user.set_role("banned")
+			db.session.add(user)
+			db.session.commit()
+		except Exception as e:
+			logging.error(f"Error: {e}")
+			return ErrorController.error(e)
 		print(f"User: {user.username} [banned]")
 		flash(u"User has been banned")
 	elif "banned" in user.roles:
-		user.set_role("user")
-		db.session.add(user)
+		try:
+			user.set_role("user")
+			db.session.add(user)
+			db.session.commit()
+		except Exception as e:
+			logging.error(f"Error: {e}")
+			return ErrorController.error(e)
 		print(f"User: {user.username} [unbanned]")
 		flash(u"User has been unbanned")
-	db.session.commit()
 	return redirect(url_for("routes.showUser", username=user.username))
 
 def destroy(_username):
@@ -170,8 +193,12 @@ def destroy(_username):
 	if user is None:
 		flash(u"User doesn't exist", 'error')
 		return redirect(url_for('routes.index'))
-	db.session.delete(user)
-	db.session.commit()
+	try:
+		db.session.delete(user)
+		db.session.commit()
+	except Exception as e:
+		logging.error(f"Error: {e}")
+		return ErrorController.error(e)
 	print(f"User: {_username} [deleted]")
 	flash(u"User {name} has been deleted".format(name=_usernamea))
 	return redirect(url_for('routes.index'))
@@ -181,9 +208,13 @@ def follow(_username):
 	Adds a followed specified_user to current_user
 	Adds a follower from current_user to specified_user
 	"""
-	user = User.query.filter_by(username=_username).first()
-	current_user.follow(user)
-	db.session.commit()
+	try:
+		user = User.query.filter_by(username=_username).first()
+		current_user.follow(user)
+		db.session.commit()
+	except Exception as e:
+		logging.error(f"Error: {e}")
+		return ErrorController.error(e)
 	return redirect(url_for("routes.showUser", username=user.username))
 
 def unfollow(_username):
@@ -191,16 +222,20 @@ def unfollow(_username):
 	Removes a followed specified_user to current_user
 	Removes a follower from current_user to specified_user
 	"""
-	user = User.query.filter_by(username=_username).first()
-	current_user.unfollow(user)
-	db.session.commit()
+	try:
+		user = User.query.filter_by(username=_username).first()
+		current_user.unfollow(user)
+		db.session.commit()
+	except Exception as e:
+		logging.error(f"Error: {e}")
+		return ErrorController.error(e)
 	return redirect(url_for("routes.showUser", username=user.username))
 
 def getUser():
 	"""
 	Sets global user variables
 	If current_user exists, g.user does
-	If current_user is an admin, g.user is
+	If current_user is an admin, g.admin is True
 	"""
 	if current_user.is_authenticated:
 		g.user = current_user

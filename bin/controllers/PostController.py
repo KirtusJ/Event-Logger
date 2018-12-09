@@ -13,6 +13,7 @@ try:
 
 	from random import choice
 	from string import ascii_uppercase
+	import logging
 except Exception as e:
 	print(f"Error importing in controllers/PostController.py: {e}")
 
@@ -36,11 +37,12 @@ def create(_title, _body):
 	try:
 		post.set_id(''.join(choice(ascii_uppercase) for i in range(12)))
 		post.set_author(g.user.username)
+		db.session.add(post)
+		db.session.commit()
 	except Exception as e:
+		logging.error(f"Error: {e}")
 		flash(u"An error has occured", 'error')
 		return render_template('index.rooms.htm.j2')
-	db.session.add(post)
-	db.session.commit()
 	print(f"Post: {post.id} [created]")
 	return redirect(url_for('routes.showPost', id=post.id))
 
@@ -55,8 +57,12 @@ def destroy(_id):
 		post = None
 	if post is not None:
 		if current_user.username == post.get_author() or g.admin:
-			db.session.delete(post)
-			db.session.commit()
+			try:
+				db.session.delete(post)
+				db.session.commit()
+			except Exception as e:
+				logging.error(f"Error: {e}")
+				return ErrorController.error(e)
 			print(f"Post: {_id} [deleted]")
 			flash(u"Post {id} has been deleted".format(id=_id))
 			return redirect(url_for('routes.index'))
@@ -76,11 +82,15 @@ def update(_id, _title, _body):
 		post = None
 	if post is not None:
 		if current_user.username == post.get_author() or g.admin:
-			if not post.title == _title: 
-				post.set_title(_title)
-			if not post.body == _body:
-				post.set_body(_body)
-			db.session.commit()
+			try:
+				if not post.title == _title: 
+					post.set_title(_title)
+				if not post.body == _body:
+					post.set_body(_body)
+				db.session.commit()
+			except Exception as e:
+				logging.error(f"Error: {e}")
+				return ErrorController.error(e)
 			print(f"Post: {_id} [updated]")
 			flash(u"Post {id} updated".format(id=_id))
 			return redirect(url_for('routes.showPost', id=post.id))

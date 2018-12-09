@@ -9,6 +9,7 @@ try:
     import pymysql
     pymysql.install_as_MySQLdb()
     from flask.logging import default_handler
+    import logging
 except ImportError as IE:
     print(IE)
 
@@ -33,6 +34,9 @@ def create_app(test_config=None):
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = config.db_track
     app.config['JWT_ACCESS_LIFESPAN'] = config.jwt_access
     app.config['JWT_REFRESH_LIFESPAN'] = config.jwt_refresh
+
+    # Defines logging
+    logging.basicConfig(filename=config.logging_file, filemode='w', format='%(name)s - %(levelname)s - %(message)s')
 
     # Catch http error codes
     try:
