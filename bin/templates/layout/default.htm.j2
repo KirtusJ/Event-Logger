@@ -50,11 +50,11 @@
         <li><a href="/users">users</a></li>
         <li><a href="/rooms">rooms</a></li>
         {% if g.user -%}
-        <li><a href="/u/{{ g.user['username'] }}">profile</a></li>
-        <li><a href="/logout">logout</a></li>
+          <li><a href="/u/{{ g.user['username'] }}">profile</a></li>
+          <li><a href="/logout">logout</a></li>
         {% else -%}
-        <li><a href="/login">login</a></li>
-        <li><a href="/register">register</a></li>
+          <li><a href="/login">login</a></li>
+          <li><a href="/register">register</a></li>
         {% endif -%}
       </ul>
     </nav>
