@@ -9,6 +9,7 @@ try:
 		guard, db, login_manager
 	)
 	from bin.models.post import Post
+	from bin.models.room import Room
 	from . import ErrorController
 
 	from random import choice
@@ -28,21 +29,30 @@ def show(_id):
 		post = None
 	return render_template("post/post.htm.j2", post=post)
 
-def create(_title, _body):
+def create(_title, _body, _room):
 	"""
 	Creates a post
 	Sets the id 
 	"""
-	post = Post(title=_title, body=_body)
+	try:
+		room = Room.query.filter_by(name=_room).first()
+	except:
+		room = None
+	if room is None:
+		flash(u"Room: {room} doesn't exist".format(room=_room))
+		return redirect(url_for('routes.showUser', username=current_user.username))
+	else:
+		post = Post(title=_title, body=_body)
 	try:
 		post.set_id(''.join(choice(ascii_uppercase) for i in range(12)))
-		post.set_author(g.user.username)
+		post.set_author(g.user.id, g.user.username)
+		post.set_room(room.id, room.name)
 		db.session.add(post)
 		db.session.commit()
 	except Exception as e:
 		logging.error(f"Error: {e}")
 		flash(u"An error has occured", 'error')
-		return render_template('index.rooms.htm.j2')
+		return redirect(url_for('routes.index'))
 	print(f"Post: {post.id} [created]")
 	return redirect(url_for('routes.showPost', id=post.id))
 

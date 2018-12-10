@@ -29,7 +29,12 @@ def show(_name):
 		room = Room.query.filter_by(name=_name).first()
 	except:
 		room = None
-	return render_template("room/room.htm.j2", room=room)
+	try:
+		posts = Post.query.filter_by(room_id=room.id).all()
+	except:
+		posts = None
+
+	return render_template("room/room.htm.j2", room=room, posts=posts)
 
 def create(_name, _description):
 	"""
@@ -46,7 +51,7 @@ def create(_name, _description):
 		return render_template('index/rooms.htm.j2')
 	try:
 		room = Room(name=_name, description=_description)
-		room.set_owner(g.user.username)
+		room.set_owner(g.user.id, g.user.username)
 		room.set_id(''.join(choice(ascii_uppercase) for i in range(12)))
 		db.session.add(room)
 		db.session.commit()

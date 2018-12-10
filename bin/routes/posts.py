@@ -20,7 +20,8 @@ def createPost():
 		if flask.request.form["post"] == "create":
 			title = flask.request.form["title"]
 			body = flask.request.form["body"]
-			return PostController.create(title, body)
+			room = flask.request.form["room"]
+			return PostController.create(title, body, room)
 	else:
 		return ErrorController.error("404"), 404
 

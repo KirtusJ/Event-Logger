@@ -120,9 +120,13 @@ def updateUser():
 	TO BE DONE
 	"""
 	if flask.request.method == "POST":
-		return "fish"
+		if flask.request.form["user"] == "update":
+			username = flask.request.form["username"]
+			email = flask.request.form["email"]
+			password = flask.request.form["password"]
+			return UserController.update(username,email,password)
 	elif flask.request.method == "GET":
-		return "bird"
+		return UserController.updateView()
 	else:
 		return ErrorController.error("404"), 404
 

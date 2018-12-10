@@ -13,10 +13,25 @@
 		<h1>{{ room['name'] }}</h1>
 		<p>ID: [{{ room['id'] }}]</p>
 		<p>{{ room['description'] }}</p>
-		<p>Owner: [{{ room['owner'] }}]</p>
+		<p>Owner: [{{ room['owner_username'] }}]</p>
 		<p>{{ room['created'] }}</p>
-		{% if room['owner'] == g.user.username -%}
+		{% if room['owner_username'] == g.user.username -%}
 			<span><a href="/room/{{ room['name'] }}/edit">edit room</a></span>
+		{% endif -%}
+		{% if posts -%}
+			{% for post in posts -%}
+				<div class="post">
+					<h3 class="title">{{ post['title'] }}</h3>
+					<p class="body">{{ post['body'] }}</p>
+					<p class="created">{{ post['created'] }}</p>
+					<span><a href="/post/{{ post['id'] }}">comments</a> <a href="/u/{{ post['author_username'] }}">author</a></span>
+					{% if g.user.username == post['post_author'] -%}
+						<span><a href="/post/{{ post['id'] }}/edit">edit</a> <a href="/post/{{ post['id'] }}/delete">delete</a></span>
+					{% endif -%}
+				</div>
+			{% endfor -%}
+		{% else -%}
+		poo
 		{% endif -%}
 	{% else -%}
 		<h1>Room not found</h1>

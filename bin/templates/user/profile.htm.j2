@@ -67,6 +67,7 @@
 				<input type="hidden" name="post" value="create">
 				<input type="text" name="title" placeholder="Title...">
 				<input type="text" name="body" placeholder="Content...">
+				<input type="text" name="room" placeholder="Room...">
 				<input type="submit" name="Submit">
 			</form>
 		{% endif -%}
@@ -76,8 +77,9 @@
 					<h3 class="title">{{ post['title'] }}</h3>
 					<p class="body">{{ post['body'] }}</p>
 					<p class="created">{{ post['created'] }}</p>
-					<span><a href="/post/{{ post['id'] }}">comments</a> <a href="/u/{{ post['post_author'] }}">author</a></span>
-					{% if g.user.username == post['post_author'] or g.admin -%}
+					<span><a href="/post/{{ post['id'] }}">comments</a> <a href="/u/{{ post['author_username'] }}">author</a></span>
+					<span><a href="/r/{{ post['room_name'] }}">room</a></span>
+					{% if g.user.username == post['author_username'] or g.admin -%}
 						<span><a href="/post/{{ post['id'] }}/edit">edit</a> <a href="/post/{{ post['id'] }}/delete">delete</a></span>
 					{% endif -%}
 				</div>

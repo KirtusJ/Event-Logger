@@ -1,0 +1,17 @@
+{% extends 'layout/default.htm.j2' -%}
+
+{% block title -%}Edit Profile{% endblock -%}
+
+{% block content -%}
+	<h1>{{ user['username'] }}'s profile</h1>
+	<form class="user" action="/user/edit" method="POST">
+		<input type="hidden" name="user" value="update">
+		<input type="text" name="username" style="width: 400px; margin-bottom: 30px" value="{{ user['username'] }}">
+		<br>
+		<input type="text" name="email" style="width: 400px; margin-bottom: 30px" value="{{ user['email'] }}">
+		<br>
+		<input type="password" name="password" style="width: 400px; margin-bottom: 30px" placeholder="Password...">
+		<br>
+		<input type="submit" name="Submit">
+	</form>
+{% endblock -%}

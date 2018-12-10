@@ -20,7 +20,8 @@ class Room(db.Model):
 	id = db.Column(db.String(12), unique=True, primary_key=True)
 	name = db.Column(db.String(120), nullable=False)
 	description = db.Column(db.String(1000))
-	owner = db.Column(db.String(100), db.ForeignKey('user.username'))
+	owner = db.Column(db.Integer, db.ForeignKey('user.id'))
+	owner_username = db.Column(db.String(100))
 	created = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 
 	"""
@@ -62,9 +63,10 @@ class Room(db.Model):
 		""" Sets room id """
 		self.id = id
 
-	def set_owner(self, username):
+	def set_owner(self, id, username):
 		""" Sets room owner """
-		self.owner = username
+		self.owner = id
+		self.owner_username = username
 
 	def get_id(self):
 		""" Used for returning room id as a string """

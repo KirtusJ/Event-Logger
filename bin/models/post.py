@@ -20,7 +20,10 @@ class Post(db.Model):
 	id = db.Column(db.String(12), unique=True, primary_key=True)
 	title = db.Column(db.String(120), nullable=False)
 	body = db.Column(db.String(1000), nullable=False)
-	post_author = db.Column(db.String(100), db.ForeignKey('user.username'))
+	author = db.Column(db.Integer, db.ForeignKey('user.id'))
+	author_username = db.Column(db.String(100))
+	room_id = db.Column(db.String(12), db.ForeignKey('room.id'))
+	room_name = db.Column(db.String(120))
 	created = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 
 	"""
@@ -55,8 +58,9 @@ class Post(db.Model):
 	def set_id(self, id):
 		self.id = id
 
-	def set_author(self, username):
-		self.post_author = username
+	def set_author(self, id, username):
+		self.author = id 
+		self.author_username = username
 
 	def set_title(self, title):
 		self.title = title
@@ -69,3 +73,7 @@ class Post(db.Model):
 
 	def get_author(self):
 		return self.post_author
+
+	def set_room(self, room_id, room_name):
+		self.room_id = room_id
+		self.room_name = room_name

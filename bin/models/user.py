@@ -20,6 +20,8 @@ class User(db.Model):
 	email = db.Column(db.String(100), unique=True, nullable=False)
 	password = db.Column(db.String(200), nullable=False)
 	roles = db.Column(db.Text)
+	created = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+	
 	default_role = "user"
 	admin_role = "admin"
 	banned_role = "banned"
@@ -29,7 +31,7 @@ class User(db.Model):
 	1. Setting up moderators for rooms
 	2. Creating the created column
 
-	#created = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+	created = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 	"""
 
 	"""
@@ -86,6 +88,12 @@ class User(db.Model):
 
 	def set_password(self, password):
 		self.password = guard.encrypt_password(password)
+
+	def set_email(self, email):
+		self.email = email
+
+	def set_username(self, username):
+		self.username = username
 
 	def check_password(self, username, password):
 		return guard.authenticate(username, password)

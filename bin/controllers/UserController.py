@@ -14,8 +14,11 @@ try:
 
 	import logging
 	import functools
+	import sys
 except Exception as e:
 	print(f"Error importing in controllers/UserController.py: {e}")
+
+""" Work on naming conventions """
 
 @login_manager.user_loader
 def user_loader(user_id):
@@ -57,7 +60,7 @@ def show(_username):
 		user=None
 	try:
 		# An exception is passed if posts is null
-		posts = Post.query.filter_by(post_author=user.username).all()
+		posts = Post.query.filter_by(author=user.id).all()
 	except:
 		posts = None
 
@@ -247,3 +250,40 @@ def getUser():
 			g.admin = False
 	else:
 		g.user = None
+
+def update(_username, _email, _password):
+	try:
+		x = current_user.username[:]
+		if current_user.check_password(x, _password):
+			try:
+				if not current_user.username == _username: 
+					username = User.query.filter_by(username=_username).first()
+					if username is not None:
+						flash(u'Username: {username} already in use'.format(username=_username))
+						return redirect(url_for('routes.updateUser'))
+					posts = Post.query.filter_by(author=current_user.id).all()
+					for post in posts:
+						current_user.set_username(_username)
+						post.set_author(current_user.id, _username)
+						try:
+							db.session.commit()
+						except Exception as e:
+							return f"{e} asd"
+				if not current_user.email == _email:
+					email = User.query.filter_by(email=_email).first()
+					if email is not None:
+						flash(u'Email: {email} already in use'.format(email=_email))
+					current_user.set_email(_email)
+				db.session.commit()
+			except Exception as e:
+				logging.error(f"Error: {e}")
+				return f"{e} on line {sys.exc_info()[-1].tb_lineno}"
+			print(f"User: {_username} [updated]")
+			flash(u"Profile updated")
+			return redirect(url_for('routes.showUser', username=current_user.username))
+	except Exception as e:
+		return f"{e}"
+def updateView():
+	if not current_user.is_authenticated:
+		return redirect(url_for('routes.createSessionView'))
+	return render_template("user/edituser.htm.j2", user=current_user)
