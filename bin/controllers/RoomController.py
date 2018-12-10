@@ -100,6 +100,13 @@ def update(_id, _name, _description):
 		if current_user.id == room.get_owner() or g.admin:
 			try:
 				if not room.name == _name: 
+					posts = Post.query.filter_by(room_id=room.id).all()
+					for post in posts:
+						try:
+							post.set_room(room.id, _name)
+						except Exception as e:
+							logging.error(f"Error: {e}")
+							return ErrorController.error(e)
 					room.set_name(_name)
 				if not room.description == _description:
 					room.set_description(_description)
