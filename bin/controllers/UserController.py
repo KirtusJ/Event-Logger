@@ -161,7 +161,7 @@ def ban(_username):
 		return redirect(url_for('routes.index'))
 	if "banned" not in user.roles:
 		try:
-			user.set_role("banned")
+			user.set_role(f"{user.roles}, {User.banned_role}")
 			db.session.add(user)
 			db.session.commit()
 		except Exception as e:
@@ -171,7 +171,9 @@ def ban(_username):
 		flash(u"User has been banned")
 	elif "banned" in user.roles:
 		try:
-			user.set_role("user")
+			roleList = user.roles.split(", banned")
+			roleString = ''.join(roleList)
+			user.set_role(roleString)
 			db.session.add(user)
 			db.session.commit()
 		except Exception as e:

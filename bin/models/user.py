@@ -22,6 +22,7 @@ class User(db.Model):
 	roles = db.Column(db.Text)
 	default_role = "user"
 	admin_role = "admin"
+	banned_role = "banned"
 
 	"""
 	To be done
