@@ -18,7 +18,7 @@
 		<p>Roles: {{ user['roles'] }}</p>
 		<p>Email: {{ user['email'] }}</p>
 	
-		{% if user['id'] == g.user['id'] -%}
+		{% if user['id'] == g.user['id'] or g.admin-%}
 			<p><a href="/user/edit">edit profile</a></p>
 		{% endif -%}
 		<br>
