@@ -29,7 +29,7 @@ def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
         SECRET_KEY=config.secret_key,
-        SQLALCHEMY_DATABASE_URI=f"mysql://{config.db_username}:{config.db_password}@localhost/{config.db_name}",
+        SQLALCHEMY_DATABASE_URI=config.db_link,
         SQLALCHEMY_TRACK_MODIFICATIONS=config.db_track,
         JWT_ACCESS_LIFESPAN=config.jwt_access,
         JWT_REFRESH_LIFESPAN=config.jwt_refresh
