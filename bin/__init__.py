@@ -21,9 +21,10 @@ def create_app(test_config=None):
     """
     Creates and configures the Flask App
     1. Initializes Database Configs
-    2. Initializes Error handlers
-    3. Initializes Blueprints
-    4. Creates the Database if it doesn't already exist
+    2. Initializes the Logging file
+    3. Initializes Error handlers
+    4. Initializes Blueprints
+    5. Creates the Database if it doesn't already exist
     """
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
@@ -35,7 +36,7 @@ def create_app(test_config=None):
     app.config['JWT_ACCESS_LIFESPAN'] = config.jwt_access
     app.config['JWT_REFRESH_LIFESPAN'] = config.jwt_refresh
 
-    # Defines logging
+    # Defines the logging file, mode, and format
     logging.basicConfig(filename=config.logging_file, filemode='w', format='%(name)s - %(levelname)s - %(message)s')
 
     # Catch http error codes
