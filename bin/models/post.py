@@ -72,7 +72,7 @@ class Post(db.Model):
 		return f"{self.id}"
 
 	def get_author(self):
-		return self.post_author
+		return self.author
 
 	def set_room(self, room_id, room_name):
 		self.room_id = room_id
