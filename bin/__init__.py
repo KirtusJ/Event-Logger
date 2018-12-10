@@ -29,12 +29,11 @@ def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
         SECRET_KEY=config.secret_key,
+        SQLALCHEMY_DATABASE_URI=f"mysql://{config.db_username}:{config.db_password}@localhost/{config.db_name}",
+        SQLALCHEMY_TRACK_MODIFICATIONS=config.db_track,
+        JWT_ACCESS_LIFESPAN=config.jwt_access,
+        JWT_REFRESH_LIFESPAN=config.jwt_refresh
     )
-    # Defines database configurations
-    app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql://{config.db_username}:{config.db_password}@localhost/{config.db_name}"
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = config.db_track
-    app.config['JWT_ACCESS_LIFESPAN'] = config.jwt_access
-    app.config['JWT_REFRESH_LIFESPAN'] = config.jwt_refresh
 
     # Defines the logging file, mode, and format
     logging.basicConfig(filename=config.logging_file, filemode='w', format='%(name)s - %(levelname)s - %(message)s')
