@@ -50,7 +50,7 @@ def create(_name, _description):
 		flash(u"Room {name} already exists".format(name=_name), 'error')
 		return render_template('index/rooms.htm.j2')
 	try:
-		room = Room(name=_name, description=_description)
+		room = Room(name=_name.lower(), description=_description)
 		room.set_owner(g.user.id, g.user.username)
 		room.set_id(''.join(choice(ascii_uppercase) for i in range(12)))
 		db.session.add(room)
@@ -60,7 +60,7 @@ def create(_name, _description):
 		flash(u"An error has occured", 'error')
 		return render_template('index.rooms.htm.j2')
 	print(f"Room: {room.name} [created]")
-	return redirect(url_for('routes.showRoom', name=_name))
+	return redirect(url_for('routes.showRoom', name=room.name))
 
 def destroy(_name):
 	"""
@@ -107,7 +107,7 @@ def update(_id, _name, _description):
 						except Exception as e:
 							logging.error(f"Error: {e}")
 							return ErrorController.error(e)
-					room.set_name(_name)
+					room.set_name(_name.lower())
 				if not room.description == _description:
 					room.set_description(_description)
 				db.session.commit()

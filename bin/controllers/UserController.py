@@ -24,11 +24,7 @@ except Exception as e:
 @login_manager.user_loader
 def user_loader(user_id):
 	""" Loads current_user """
-	try:
-		return User.query.get(user_id)
-	except Exception as e:
-		logging.warning(f"Warning: {e}")
-		pass
+	return User.query.get(user_id)
 
 def login_required(view):
 	""" Used for authenticating if a user is logged in """

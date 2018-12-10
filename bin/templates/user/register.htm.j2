@@ -2,9 +2,9 @@
 
 {% block title -%}
 	{% if not g.user -%}
-		Already signed in
-	{% else -%}
 		Register
+	{% else -%}
+		Already signed in
 	{% endif -%}
 {% endblock -%}
 
