@@ -56,7 +56,7 @@ def create(_name, _description):
 		db.session.add(room)
 		db.session.commit()
 	except Exception as e:
-		logging.error(f"Error: {e}")
+		logging.error(f"{e}")
 		flash(u"An error has occured", 'error')
 		return render_template('index.rooms.htm.j2')
 	print(f"Room: {room.name} [created]")
@@ -77,7 +77,7 @@ def destroy(_name):
 				db.session.delete(room)
 				db.session.commit()
 			except Exception as e:
-				logging.error(f"Error: {e}")
+				logging.error(f"{e}")
 				return ErrorController.error(e)
 			print(f"Room: {_name} [deleted]")
 			flash(u"Room {name} has been deleted".format(name=_name))

@@ -14,7 +14,9 @@
 		{% if "admin" in user['roles'] -%}
 			<h1 style="color: red">ADMIN</h1>
 		{% endif -%}
-		<span>ID: [{{ user['id'] }}]</span>
+		{% if user['bio'] -%}
+			<p>{{ user['bio'] }}</p>
+		{% endif -%}
 		<p>Roles: {{ user['roles'] }}</p>
 		<p>Email: {{ user['email'] }}</p>
 		<p>Created: {{ user['created'] }}</p>

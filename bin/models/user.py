@@ -21,6 +21,7 @@ class User(db.Model):
 	password = db.Column(db.String(200), nullable=False)
 	roles = db.Column(db.Text)
 	created = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+	bio = db.Column(db.Text)
 	
 	default_role = "user"
 	admin_role = "admin"
@@ -98,11 +99,14 @@ class User(db.Model):
 	def set_id(self, id):
 		self.id = id
 
-	def check_password(self, username, password):
-		return guard.authenticate(username, password)
-
 	def set_role(self, role):
 		self.roles = role
+
+	def set_bio(self, bio):
+		self.bio = bio
+
+	def check_password(self, username, password):
+		return guard.authenticate(username, password)
 
 	def get_id(self):
 		return f"{self.id}"

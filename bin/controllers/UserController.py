@@ -255,7 +255,7 @@ def getUser():
 	else:
 		g.user = None
 
-def update(_username, _email, _password):
+def update(_username, _email, _bio, _password):
 	"""
 	Used to update user data
 	Authenticates user password given
@@ -284,18 +284,25 @@ def update(_username, _email, _password):
 					email = User.query.filter_by(email=_email).first()
 					if email is not None:
 						flash(u'Email: {email} already in use'.format(email=_email))
+						return redirect(url_for("routes.updateUser"))
 					try:
 						current_user.set_email(_email)
 					except Exception as e:
-						logging.error(f"Error: {e}")
+						logging.error(f"{e}")
+						return ErrorController.error(e)
+				if not current_user.bio == _bio:
+					try:
+						current_user.set_bio(_bio)
+					except Exception as e:
+						logging.error(f"{e}")
 						return ErrorController.error(e)
 				try:
 					db.session.commit()
 				except Exception as e:
-					logging.error(f"Error: {e}")
+					logging.error(f"{e}")
 					return ErrorController.error(e)
 			except Exception as e:
-				logging.error(f"Error: {e}")
+				logging.error(f"{e}")
 				return ErrorController.error(e)
 			print(f"User: {_username} [updated]")
 			flash(u"Profile updated")

@@ -10,6 +10,13 @@
 		<br>
 		<input type="text" name="email" style="width: 400px; margin-bottom: 30px" value="{{ user['email'] }}">
 		<br>
+		{% if user['bio'] -%}
+			<input type="text" name="bio" style="width: 400px; margin-bottom: 30px" value="{{ user['bio'] }}">
+		{% else -%}
+			<input type="text" name="bio" style="width: 400px; margin-bottom: 30px" placeholder="Bio...">
+		{% endif -%}
+		
+		<br>
 		<input type="password" name="password" style="width: 400px; margin-bottom: 30px" placeholder="Password...">
 		<br>
 		<input type="submit" name="Submit">

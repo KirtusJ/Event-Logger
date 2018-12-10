@@ -123,8 +123,9 @@ def updateUser():
 		if flask.request.form["user"] == "update":
 			username = flask.request.form["username"]
 			email = flask.request.form["email"]
+			bio = flask.request.form["bio"]
 			password = flask.request.form["password"]
-			return UserController.update(username,email,password)
+			return UserController.update(username,email,bio,password)
 	elif flask.request.method == "GET":
 		return UserController.updateView()
 	else:

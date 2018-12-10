@@ -50,7 +50,7 @@ def create(_title, _body, _room):
 		db.session.add(post)
 		db.session.commit()
 	except Exception as e:
-		logging.error(f"Error: {e}")
+		logging.error(f"{e}")
 		flash(u"An error has occured", 'error')
 		return redirect(url_for('routes.index'))
 	print(f"Post: {post.id} [created]")
@@ -71,7 +71,7 @@ def destroy(_id):
 				db.session.delete(post)
 				db.session.commit()
 			except Exception as e:
-				logging.error(f"Error: {e}")
+				logging.error(f"{e}")
 				return ErrorController.error(e)
 			print(f"Post: {_id} [deleted]")
 			flash(u"Post {id} has been deleted".format(id=_id))
@@ -99,7 +99,7 @@ def update(_id, _title, _body):
 					post.set_body(_body)
 				db.session.commit()
 			except Exception as e:
-				logging.error(f"Error: {e}")
+				logging.error(f"{e}")
 				return ErrorController.error(e)
 			print(f"Post: {_id} [updated]")
 			flash(u"Post {id} updated".format(id=_id))
