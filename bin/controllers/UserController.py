@@ -281,8 +281,9 @@ def update(_username, _email, _password):
 			print(f"User: {_username} [updated]")
 			flash(u"Profile updated")
 			return redirect(url_for('routes.showUser', username=current_user.username))
-	except Exception as e:
-		return f"{e}"
+	except:
+		flash(u"Incorrect password")
+		return redirect(url_for("routes.updateUser"))
 def updateView():
 	if not current_user.is_authenticated:
 		return redirect(url_for('routes.createSessionView'))
