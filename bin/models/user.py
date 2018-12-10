@@ -14,6 +14,8 @@ class User(db.Model):
 	3. The User's email (email)
 	4. The user's password (password)
 	5. The user's roles (roles)
+	6. The user's creation data (creation)
+	7. The user's bio (bio)
 	"""
 	id = db.Column(db.String(12), unique=True, primary_key=True)
 	username = db.Column(db.String(100), unique=True, nullable=False)

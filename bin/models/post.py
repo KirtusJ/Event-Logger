@@ -14,8 +14,11 @@ class Post(db.Model):
 	1. The Unique Post Identifier (id)
 	2. The Post Title (title)
 	3. The content of the Post (body)
-	4. The author of the post (post_author)
-	5. The time the post was created (created)
+	4. The author id of the post (author)
+	5. The author username of the post (author_username)
+	6. The room id of the post (room_id)
+	7. The room name of the post (room_name)
+	8. The time the post was created (created)
 	"""
 	id = db.Column(db.String(12), unique=True, primary_key=True)
 	title = db.Column(db.String(120), nullable=False)

@@ -14,8 +14,9 @@ class Room(db.Model):
 	1. The Unique Room Identifier (id)
 	2. The name of the Room (name)
 	3. The description of the Room (description)
-	4. The owner of the Room (owner)
-	5. The time the Room was created (created)
+	4. The owner id of the Room (owner)
+	5. The owner username of the room (owner_username)
+	6. The time the Room was created (created)
 	"""
 	id = db.Column(db.String(12), unique=True, primary_key=True)
 	name = db.Column(db.String(120), nullable=False)
