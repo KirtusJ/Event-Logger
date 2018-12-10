@@ -252,9 +252,16 @@ def getUser():
 		g.user = None
 
 def update(_username, _email, _password):
+	"""
+	Used to update user data
+	Authenticates user password given
+	Updates if:
+	1. Username given is not in use
+	2. Email given is not in use
+	3. Information given is different than previous value
+	"""
 	try:
-		x = current_user.username[:]
-		if current_user.check_password(x, _password):
+		if current_user.check_password(current_user.username, _password):
 			try:
 				if not current_user.username == _username: 
 					username = User.query.filter_by(username=_username).first()
@@ -263,21 +270,29 @@ def update(_username, _email, _password):
 						return redirect(url_for('routes.updateUser'))
 					posts = Post.query.filter_by(author=current_user.id).all()
 					for post in posts:
-						current_user.set_username(_username)
-						post.set_author(current_user.id, _username)
 						try:
-							db.session.commit()
+							current_user.set_username(_username)
+							post.set_author(current_user.id, _username)
 						except Exception as e:
-							return f"{e} asd"
+							logging.error(f"Error: {e}")
+							return ErrorController.error(e)
 				if not current_user.email == _email:
 					email = User.query.filter_by(email=_email).first()
 					if email is not None:
 						flash(u'Email: {email} already in use'.format(email=_email))
-					current_user.set_email(_email)
-				db.session.commit()
+					try:
+						current_user.set_email(_email)
+					except Exception as e:
+						logging.error(f"Error: {e}")
+						return ErrorController.error(e)
+				try:
+					db.session.commit()
+				except Exception as e:
+					logging.error(f"Error: {e}")
+					return ErrorController.error(e)
 			except Exception as e:
 				logging.error(f"Error: {e}")
-				return f"{e} on line {sys.exc_info()[-1].tb_lineno}"
+				return ErrorController.error(e)
 			print(f"User: {_username} [updated]")
 			flash(u"Profile updated")
 			return redirect(url_for('routes.showUser', username=current_user.username))

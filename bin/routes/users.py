@@ -111,13 +111,13 @@ def updateUser():
 	Verifies current_user
 	
 	If POST
-	Sends the user to UserController
+	Sends username, email, and password to UserController
 	function update()
 
 	If GET
-	Renders the (edituser) view
+	Sends the user to UserController
+	function updateView()
 
-	TO BE DONE
 	"""
 	if flask.request.method == "POST":
 		if flask.request.form["user"] == "update":
