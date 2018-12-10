@@ -72,7 +72,7 @@ def destroy(_name):
 	except:
 		room = None
 	if room is not None:
-		if current_user == room.get_owner() or g.admin:
+		if current_user.id == room.get_owner() or g.admin:
 			try:
 				db.session.delete(room)
 				db.session.commit()
@@ -87,3 +87,46 @@ def destroy(_name):
 	else:
 		flash(u"Room {name} doesn't exist".format(name=_name), 'error')
 		return redirect(url_for('routes.index'))
+
+def update(_id, _name, _description):
+	"""
+	Updates post
+	"""
+	try:
+		room = Room.query.filter_by(id=_id).first()
+	except:
+		room = None
+	if room is not None:
+		if current_user.id == room.get_owner() or g.admin:
+			try:
+				if not room.name == _name: 
+					room.set_name(_name)
+				if not room.description == _description:
+					room.set_description(_description)
+				db.session.commit()
+			except Exception as e:
+				logging.error(f"{e}")
+				return ErrorController.error(e)
+			print(f"Room: {_id} [updated]")
+			flash(u"Room {id} updated".format(id=_id))
+			return redirect(url_for('routes.showRoom', name=room.name))
+		else:
+			return ErrorController.error("403"), 403
+	else:
+		flash(u"Room {id} doesn't exist".format(id=_id))
+		return redirect(url_for('routes.index'))
+
+def updateView(_id):
+	try:
+		room = Room.query.filter_by(id=_id).first()
+	except:
+		room = None
+	if room is not None:
+		if current_user.id == room.get_owner() or g.admin:
+			return render_template("room/editroom.htm.j2", room=room)
+		else:
+			return ErrorController.error("403"), 403
+	else:
+		flash(u"Room {id} doesn't exist".format(id=_id))
+		return redirect(url_for('routes.index'))
+	

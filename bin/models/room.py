@@ -68,6 +68,12 @@ class Room(db.Model):
 		self.owner = id
 		self.owner_username = username
 
+	def set_name(self, name):
+		self.name = name
+
+	def set_description(self, description):
+		self.description = description
+
 	def get_id(self):
 		""" Used for returning room id as a string """
 		return f"{self.id}"

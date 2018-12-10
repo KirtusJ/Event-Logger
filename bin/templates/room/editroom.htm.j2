@@ -1,0 +1,15 @@
+{% extends 'layout/default.htm.j2' -%}
+
+{% block title -%}Edit: {{ room['name'] }}{% endblock -%}
+
+{% block content -%}
+	<h1>Edit: {{ room['name'] }}</h1>
+	<form class="room" action="/room/{{ room['id'] }}/edit" method="POST">
+		<input type="hidden" name="room" value="update">
+		<input type="text" name="name" style="width: 400px; margin-bottom: 30px" value="{{ room['name'] }}">
+		<br>
+		<input type="text" name="description" style="width: 400px; margin-bottom: 30px"value="{{ room['description'] }}">
+		<br>
+		<input type="submit" name="Submit">
+	</form>
+{% endblock -%}

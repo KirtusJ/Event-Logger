@@ -42,9 +42,9 @@ def createRoom():
 	else:
 		return ErrorController.error("404"), 404
 
-@routes.route('/room/<name>/edit', methods=['POST','GET'])
+@routes.route('/room/<id>/edit', methods=['POST','GET'])
 @UserController.login_required
-def updateRoom(name):
+def updateRoom(id):
 	"""
 	Ensures current_user
 	
@@ -59,10 +59,11 @@ def updateRoom(name):
 	Renders editroom template (TBD)
 	"""
 	if flask.request.method == "POST":
-		# form handling here
-		return "TBD: post"
+		if flask.request.form["room"] == "update":
+			name = flask.request.form["name"]
+			description = flask.request.form["description"]
+			return RoomController.update(id,name,description)
 	elif flask.request.method == "GET":
-		# return render_template("room/editroom.htm.j2")
-		return "TBD: get"
+		return RoomController.updateView(id)
 	else:
 		return ErrorController.error("404"), 404	

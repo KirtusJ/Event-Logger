@@ -91,7 +91,7 @@ def update(_id, _title, _body):
 	except:
 		post = None
 	if post is not None:
-		if current_user.username == post.get_author() or g.admin:
+		if current_user.id == post.get_author() or g.admin:
 			try:
 				if not post.title == _title: 
 					post.set_title(_title)
@@ -116,7 +116,7 @@ def updateView(_id):
 	except:
 		post = None
 	if post is not None:
-		if current_user.username == post.get_author() or g.admin:
+		if current_user.id == post.get_author() or g.admin:
 			return render_template("post/editpost.htm.j2", post=post)
 		else:
 			return ErrorController.error("403"), 403
