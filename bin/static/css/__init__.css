@@ -1,1 +1,3 @@
 /* CSS Files go into this directory */
+
+/* <link rel="stylesheet" href="{{ url_for('static', filename='css/__init__.css') }}"> */
