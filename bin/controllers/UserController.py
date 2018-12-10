@@ -43,6 +43,8 @@ def admin_required(view):
 	""" Used for authenticating if a user is an admin """
 	@functools.wraps(view)
 	def wrapped_view(**kwargs):
+		if not current_user.is_authenticated:
+			return ErrorController.error("404"), 404
 		if not g.admin:
 			return ErrorController.error("404"), 404
 		return view(**kwargs)
