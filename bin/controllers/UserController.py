@@ -12,9 +12,10 @@ try:
 	from bin.models.post import Post
 	from . import ErrorController
 
+	from random import choice
+	from string import ascii_uppercase
 	import logging
 	import functools
-	import sys
 except Exception as e:
 	print(f"Error importing in controllers/UserController.py: {e}")
 
@@ -127,6 +128,7 @@ def register(_username, _email, _password):
 	try:
 		user = User(username=_username, email=_email, roles=f"{User.default_role}")
 		user.set_password(_password)
+		user.set_id(''.join(choice(ascii_uppercase) for i in range(12)))
 	except Exception as e:
 		logging.error(f"Error: {e}")
 		return ErrorController.error(e)

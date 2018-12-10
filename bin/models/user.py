@@ -15,7 +15,7 @@ class User(db.Model):
 	4. The user's password (password)
 	5. The user's roles (roles)
 	"""
-	id = db.Column(db.Integer, primary_key=True)
+	id = db.Column(db.String(12), unique=True, primary_key=True)
 	username = db.Column(db.String(100), unique=True, nullable=False)
 	email = db.Column(db.String(100), unique=True, nullable=False)
 	password = db.Column(db.String(200), nullable=False)
@@ -43,8 +43,8 @@ class User(db.Model):
 	"""
 
 	followers = db.Table('followers',
-		db.Column('follower_id', db.Integer, db.ForeignKey("user.id")),
-		db.Column('followed_id', db.Integer, db.ForeignKey("user.id")),
+		db.Column('follower_id', db.String(12), db.ForeignKey("user.id")),
+		db.Column('followed_id', db.String(12), db.ForeignKey("user.id")),
 		db.UniqueConstraint('follower_id', 'followed_id', name='uix_1')
 	)
 	followed = db.relationship(
@@ -94,6 +94,9 @@ class User(db.Model):
 
 	def set_username(self, username):
 		self.username = username
+
+	def set_id(self, id):
+		self.id = id
 
 	def check_password(self, username, password):
 		return guard.authenticate(username, password)

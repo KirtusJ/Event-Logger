@@ -20,7 +20,7 @@ class Room(db.Model):
 	id = db.Column(db.String(12), unique=True, primary_key=True)
 	name = db.Column(db.String(120), nullable=False)
 	description = db.Column(db.String(1000))
-	owner = db.Column(db.Integer, db.ForeignKey('user.id'))
+	owner = db.Column(db.String(12), db.ForeignKey('user.id'))
 	owner_username = db.Column(db.String(100))
 	created = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 

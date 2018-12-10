@@ -20,7 +20,7 @@ class Post(db.Model):
 	id = db.Column(db.String(12), unique=True, primary_key=True)
 	title = db.Column(db.String(120), nullable=False)
 	body = db.Column(db.String(1000), nullable=False)
-	author = db.Column(db.Integer, db.ForeignKey('user.id'))
+	author = db.Column(db.String(12), db.ForeignKey('user.id'))
 	author_username = db.Column(db.String(100))
 	room_id = db.Column(db.String(12), db.ForeignKey('room.id'))
 	room_name = db.Column(db.String(120))

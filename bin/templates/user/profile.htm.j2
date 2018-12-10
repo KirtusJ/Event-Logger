@@ -17,7 +17,7 @@
 		<span>ID: [{{ user['id'] }}]</span>
 		<p>Roles: {{ user['roles'] }}</p>
 		<p>Email: {{ user['email'] }}</p>
-	
+		<p>Created: {{ user['created'] }}</p>
 		{% if user['id'] == g.user['id'] or g.admin-%}
 			<p><a href="/user/edit">edit profile</a></p>
 		{% endif -%}
