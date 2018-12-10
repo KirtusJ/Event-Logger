@@ -3,6 +3,8 @@ A web app developed with Python using the Flask framework. Currently in early de
 
 Read Requirements.txt to see all required libraries
 
+- virtualenv .env && source .env/bin/activate && pip install -r requirements.txt
+
 Flask Libraries in use:
 
 - Flask-SQLAlchemy
