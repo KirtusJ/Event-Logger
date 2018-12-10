@@ -103,7 +103,7 @@ def update(_id, _name, _description):
 					posts = Post.query.filter_by(room_id=room.id).all()
 					for post in posts:
 						try:
-							post.set_room(room.id, _name)
+							post.set_room(room.id, _name.lower())
 						except Exception as e:
 							logging.error(f"Error: {e}")
 							return ErrorController.error(e)
