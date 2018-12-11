@@ -104,6 +104,16 @@ def unfollowUser(username):
 	"""
 	return UserController.unfollow(username)
 
+@routes.route('/room/<id>/subscribe/')
+@UserController.login_required
+def subscribeRoom(id):
+	return UserController.subscribe(id)
+
+@routes.route('/room/<id>/unsubscribe/')
+@UserController.login_required
+def unsubscribeRoom(id):
+	return UserController.unsubscribe(id)
+
 @routes.route('/user/edit', methods=['GET','POST'])
 @UserController.login_required
 def updateUser():

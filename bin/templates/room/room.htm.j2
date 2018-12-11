@@ -15,6 +15,19 @@
 		<p>{{ room['description'] }}</p>
 		<p>Owner: [{{ room['owner_username'] }}]</p>
 		<p>{{ room['created'] }}</p>
+		{% if g.user -%}
+			{% if is_subscribed -%}		
+				<span><a href="/room/{{ room['id'] }}/unsubscribe">unsubscribe</a></span>
+			{% else -%}
+				<span><a href="/room/{{ room['id'] }}/subscribe">subscribe</a></span>
+			{% endif -%}
+		{% endif -%}
+		{% if subscribers -%}
+
+			<p>Subscribers: {{ subscribers.count() }}</p>
+		{% else -%}
+			<p>Subscribers: 0</p>
+		{% endif -%}
 		{% if room['owner_username'] == g.user.username -%}
 			<span><a href="/room/{{ room['id'] }}/edit">edit room</a></span>
 		{% endif -%}

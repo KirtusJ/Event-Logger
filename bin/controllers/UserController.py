@@ -10,6 +10,7 @@ try:
 	)
 	from bin.models.user import User
 	from bin.models.post import Post
+	from bin.models.room import Room
 	from . import ErrorController
 
 	from random import choice
@@ -215,12 +216,19 @@ def follow(_username):
 	"""
 	try:
 		user = User.query.filter_by(username=_username).first()
-		current_user.follow(user)
-		db.session.commit()
-	except Exception as e:
-		logging.error(f"Error: {e}")
-		return ErrorController.error(e)
-	return redirect(url_for("routes.showUser", username=user.username))
+	except:
+		user = None
+	if user is not None:
+		user = None
+		try:
+			current_user.follow(user)
+			db.session.commit()
+		except Exception as e:
+			logging.error(f"{e}")
+			return ErrorController.error(e)
+		return redirect(url_for("routes.showUser", username=user.username))
+	flash(u"User: {username} doesn't exist".format(username=_username))
+	return redirect(url_for("routes.index"))
 
 def unfollow(_username):
 	"""
@@ -229,12 +237,60 @@ def unfollow(_username):
 	"""
 	try:
 		user = User.query.filter_by(username=_username).first()
-		current_user.unfollow(user)
-		db.session.commit()
+	except:
+		user = None
+	if user is not None:
+		user = None
+		try:
+			current_user.unfollow(user)
+			db.session.commit()
+		except Exception as e:
+			logging.error(f"{e}")
+			return ErrorController.error(e)
+		return redirect(url_for("routes.showUser", username=user.username))
+	flash(u"User: {username} doesn't exist".format(username=_username))
+	return redirect(url_for("routes.index"))
+
+def subscribe(_id):
+	"""
+	Adds a subscription to specified_room by current_user
+	Adds a subscriber to specified_room by current_user
+	"""
+	try:
+		room = Room.query.filter_by(id=_id).first()
 	except Exception as e:
-		logging.error(f"Error: {e}")
-		return ErrorController.error(e)
-	return redirect(url_for("routes.showUser", username=user.username))
+		room = None
+	if room is not None:
+		try:
+			current_user.subscribe(room)
+			db.session.commit()
+		except Exception as e:
+			db.session.rollback()
+			logging.error(f"{e}")
+			return ErrorController.error(e)
+		return redirect(url_for("routes.showRoom", name=room.name))
+	flash(u"Room: {id} doesn't exist".format(id=_id))
+	return redirect(url_for("routes.index"))
+
+def unsubscribe(_id):
+	"""
+	Removes a subscription to specified_room by current_user
+	Removes a subscriber to specified_room by current_user
+	"""
+	try:
+		room = Room.query.filter_by(id=_id).first()
+	except:
+		room = None
+	if room is not None:
+		try:
+			current_user.unsubscribe(room)
+			db.session.commit()
+		except Exception as e:
+			logging.error(f"{e}")
+			return ErrorController.error(e)
+		return redirect(url_for("routes.showRoom", name=room.name))
+	flash(u"Room: {id} doesn't exist".format(id=_id))
+	return redirect(url_for("routes.index"))
 
 def getUser():
 	"""
@@ -256,9 +312,10 @@ def update(_username, _email, _bio, _password):
 	Used to update user data
 	Authenticates user password given
 	Updates if:
-	1. Username given is not in use
-	2. Email given is not in use
-	3. Information given is different than previous value
+	1. Password authenticates
+	2. Username given is not in use
+	3. Email given is not in use
+	4. Information given is different than previous value
 	"""
 	try:
 		if current_user.check_password(current_user.username, _password):

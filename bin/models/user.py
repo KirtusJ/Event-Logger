@@ -1,5 +1,6 @@
 try:
 	from . import db, guard, cors
+	from .room import Room
 	from sqlalchemy.ext.hybrid import hybrid_property
 	from datetime import datetime
 except ImportError as IE:
@@ -55,6 +56,13 @@ class User(db.Model):
 		primaryjoin=(followers.c.follower_id == id),
 		secondaryjoin=(followers.c.followed_id == id),
 		backref=db.backref('followers', lazy='dynamic'), lazy='dynamic'
+	)
+
+	subscribed = db.relationship(
+		'Room', secondary=Room.subscribers,
+		primaryjoin=(Room.subscribers.c.subscriber_username == username),
+		secondaryjoin=(Room.subscribers.c.subscribed_id == Room.id),
+		backref=db.backref('subscribers', lazy='dynamic'), lazy='dynamic'
 	)
 
 	def __repr__(self):
@@ -119,3 +127,8 @@ class User(db.Model):
 	def unfollow(self, user):
 		self.followed.remove(user)
 
+	def subscribe(self, room):
+		self.subscribed.append(room)
+
+	def unsubscribe(self, room):
+		self.subscribed.remove(room)

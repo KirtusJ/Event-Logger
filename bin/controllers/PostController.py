@@ -35,7 +35,7 @@ def create(_title, _body, _room):
 	Sets the id 
 	"""
 	try:
-		room = Room.query.filter_by(name=_room).first()
+		room = Room.query.filter_by(name=_room.lower()).first()
 	except:
 		room = None
 	if room is None:

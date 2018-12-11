@@ -34,7 +34,15 @@ def show(_name):
 	except:
 		posts = None
 
-	return render_template("room/room.htm.j2", room=room, posts=posts)
+	subscribers=None
+	is_subscribed=None
+	for s in room.subscribers:
+		subscribers=room.subscribers
+		if current_user.is_authenticated and current_user.username == s.username:
+			is_subscribed=True
+			break
+
+	return render_template("room/room.htm.j2", room=room, posts=posts, subscribers=subscribers, is_subscribed=is_subscribed)
 
 def create(_name, _description):
 	"""

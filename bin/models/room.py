@@ -25,6 +25,12 @@ class Room(db.Model):
 	owner_username = db.Column(db.String(100))
 	created = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 
+	subscribers = db.Table('subscribers',
+		db.Column('subscriber_username', db.String(12), db.ForeignKey("user.username")),
+		db.Column('subscribed_id', db.String(100), db.ForeignKey("room.id")),
+		db.UniqueConstraint('subscriber_username', 'subscribed_id', name='uix_1')
+	)
+
 	"""
 	To be done
 	1. Setting up post relationships
