@@ -17,6 +17,9 @@ try:
 	from string import ascii_uppercase
 	import logging
 	import functools
+	import os
+	import config
+	import json
 except Exception as e:
 	print(f"Error importing in controllers/UserController.py: {e}")
 
@@ -143,6 +146,15 @@ def register(_username, _email, _password):
 	db.session.commit()
 	print(f"User: {user.username} [registered]")
 	flash(u"User {name} has been created".format(name=_username))
+
+	data = {'type' : 'user', 'username' : user.username, 'id' : user.id, 'email' : user.email, 'roles' : user.roles, 'created_date' : str(user.created), 'bio' : None}
+	file = f"{config.api_directory}/user/{user.id}.json"
+	if os.path.exists(f"{config.api_directory}/user/"):
+		if not os.path.exists(file):
+			open(file, "w")
+			with open(file, "w") as json_file:
+				json.dump(data, json_file)
+
 	return redirect(url_for('routes.createSessionView'))
 
 def logout():
@@ -196,6 +208,14 @@ def ban(_username):
 			return ErrorController.error(e)
 		print(f"User: {user.username} [unbanned]")
 		flash(u"User has been unbanned")
+
+	file = f"{config.api_directory}/user/{user.id}.json"
+	if os.path.exists(file):
+		with open (file, "rt") as fp:
+			data = json.load(fp)
+		data["roles"] = user.roles
+		with open(file, "wt") as json_file:
+			json.dump(data, json_file)
 	return redirect(url_for("routes.showUser", username=user.username))
 
 def destroy(_username):
@@ -332,6 +352,7 @@ def update(_username, _email, _bio, _password):
 	try:
 		if current_user.check_password(current_user.username, _password):
 			try:
+				updated_username = False
 				if not current_user.username == _username: 
 					username = User.query.filter_by(username=_username).first()
 					if username is not None:
@@ -340,11 +361,13 @@ def update(_username, _email, _bio, _password):
 					posts = Post.query.filter_by(author=current_user.id).all()
 					for post in posts:
 						try:
-							current_user.set_username(_username)
 							post.set_author(current_user.id, _username)
 						except Exception as e:
 							logging.error(f"Error: {e}")
 							return ErrorController.error(e)
+					current_user.set_username(_username)
+					updated_username = True
+				updated_email = False
 				if not current_user.email == _email:
 					email = User.query.filter_by(email=_email).first()
 					if email is not None:
@@ -352,12 +375,15 @@ def update(_username, _email, _bio, _password):
 						return redirect(url_for("routes.updateUser"))
 					try:
 						current_user.set_email(_email)
+						updated_email = True
 					except Exception as e:
 						logging.error(f"{e}")
 						return ErrorController.error(e)
+				updated_bio = False
 				if not current_user.bio == _bio:
 					try:
 						current_user.set_bio(_bio)
+						updated_bio = True
 					except Exception as e:
 						logging.error(f"{e}")
 						return ErrorController.error(e)
@@ -371,8 +397,20 @@ def update(_username, _email, _bio, _password):
 				return ErrorController.error(e)
 			print(f"User: {_username} [updated]")
 			flash(u"Profile updated")
+			file = f"{config.api_directory}/user/{current_user.id}.json"
+			if os.path.exists(file) and updated_username is True or updated_email is True or updated_bio is True:
+				with open (file, "rt") as fp:
+					data = json.load(fp)
+				if updated_username is True:
+					data["username"] = current_user.username
+				if updated_email is True:
+					data["email"] = current_user.email
+				if updated_bio is True:
+					data["bio"] = current_user.bio
+				with open(file, "wt") as json_file:
+					json.dump(data, json_file)
 			return redirect(url_for('routes.showUser', username=current_user.username))
-	except:
+	except Exception as e:
 		flash(u"Incorrect password")
 		return redirect(url_for("routes.updateUser"))
 def updateView():

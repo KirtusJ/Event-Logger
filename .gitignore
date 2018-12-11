@@ -1,6 +1,7 @@
 migrations/
 tests/
 instance/
+bin/static/api/
 config.py
 console.log
 venv/
