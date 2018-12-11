@@ -68,6 +68,7 @@ def show(_username):
 	is_following=None
 	followers=None
 	followed=None
+	subscribed=None
 
 	if user is not None:
 		for f in user.followers:
@@ -77,8 +78,10 @@ def show(_username):
 				break
 		for f in user.followed:
 			followed=user.followed
+		for f in user.subscribed:
+			subscribed = user.subscribed
 
-	return render_template("user/profile.htm.j2", user=user, posts=posts, followers=followers, is_following=is_following, followed=followed)
+	return render_template("user/profile.htm.j2", user=user, posts=posts, followers=followers, is_following=is_following, followed=followed, subscribed=subscribed)
 
 def login(_username, _password):
 	"""

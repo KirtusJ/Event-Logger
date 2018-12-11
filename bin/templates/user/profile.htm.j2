@@ -64,6 +64,19 @@
 		{% else -%}
 			<p>Following: None</p>
 		{% endif -%}
+		{% if subscribed -%}
+			<p>Subscribed: 
+				{% for s in subscribed -%}
+					{% if not loop.last -%}
+						<a href="/r/{{ s['name'] }}">{{ s['name'] }}</a>, 
+					{% elif loop.last -%}
+						<a href="/r/{{ s['name'] }}">{{ s['name'] }}</a>
+					{% endif -%}
+				{% endfor -%}
+			</p>
+		{% else -%}
+			<p>Subscribed: None</p>
+		{% endif -%}
 		{% if user['id'] == g.user['id'] -%}
 			<form class="PostForm" action="/post/new" method="POST">
 				<input type="hidden" name="post" value="create">
