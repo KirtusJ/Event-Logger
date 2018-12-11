@@ -286,6 +286,7 @@ def unsubscribe(_id):
 			current_user.unsubscribe(room)
 			db.session.commit()
 		except Exception as e:
+			db.session.rollback()
 			logging.error(f"{e}")
 			return ErrorController.error(e)
 		return redirect(url_for("routes.showRoom", name=room.name))

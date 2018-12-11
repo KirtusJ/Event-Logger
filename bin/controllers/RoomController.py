@@ -62,11 +62,12 @@ def create(_name, _description):
 		room.set_owner(g.user.id, g.user.username)
 		room.set_id(''.join(choice(ascii_uppercase) for i in range(12)))
 		db.session.add(room)
+		current_user.subscribe(room)
 		db.session.commit()
 	except Exception as e:
 		logging.error(f"{e}")
 		flash(u"An error has occured", 'error')
-		return render_template('index.rooms.htm.j2')
+		return render_template('index/index.htm.j2')
 	print(f"Room: {room.name} [created]")
 	return redirect(url_for('routes.showRoom', name=room.name))
 
