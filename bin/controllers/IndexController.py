@@ -19,8 +19,9 @@ def show():
 
 	post = Post.query.order_by(Post.created.desc()).all()
 	subscribed=None
-	for f in current_user.subscribed:
-		subscribed=current_user.subscribed
+	if current_user.is_authenticated:
+		for f in current_user.subscribed:
+			subscribed=current_user.subscribed
 
 	return render_template('index/index.htm.j2', users=users, posts=post, subscribed=subscribed)
 def users():
