@@ -7,22 +7,18 @@
 		{% if subscribed -%}
 			{% for s in subscribed -%}
 				{% for post in posts -%}
-					{% if post -%}
-						{% if post['room_id'] == s['id'] -%}
-							<div class="post">
-							<h3 class="title">{{ post['title'] }}</h3>
-							<p class="body">{{ post['body'] }}</p>
-							<p>{{ post['created'] }}</p>
-							<span><a href="/r/{{ post['room_name'] }}/comments/{{ post['id'] }}">comments</a> <a href="/u/{{ post['author_username'] }}">author</a></span>
-							<span><a href="/r/{{ post['room_name'] }}">room</a></span>
-							{% if g.user.username == post['author_username'] or g.admin -%}
-								<span><a href="/post/{{ post['id'] }}/edit">edit</a> <a href="/post/{{ post['id'] }}/delete">delete</a></span>
-							{% endif -%}
-							</div>
-							<br>
+					{% if post['room_id'] == s['id'] -%}
+						<div class="post">
+						<h3 class="title">{{ post['title'] }}</h3>
+						<p class="body">{{ post['body'] }}</p>
+						<p>{{ post['created'] }}</p>
+						<span><a href="/r/{{ post['room_name'] }}/comments/{{ post['id'] }}">comments</a> <a href="/u/{{ post['author_username'] }}">author</a></span>
+						<span><a href="/r/{{ post['room_name'] }}">room</a></span>
+						{% if g.user.username == post['author_username'] or g.admin -%}
+							<span><a href="/post/{{ post['id'] }}/edit">edit</a> <a href="/post/{{ post['id'] }}/delete">delete</a></span>
 						{% endif -%}
-					{% else -%}
-						<p>No posts</p>
+						</div>
+						<br>
 					{% endif -%}
 				{% endfor -%}
 			{% endfor -%}
