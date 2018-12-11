@@ -8,6 +8,20 @@
 	{% endif -%}
 {% endblock -%}
 
+{% block head -%}
+	<script type="text/javascript">
+		$(document).ready(function() {
+			try {
+				$.getJSON("{{ url_for('static', filename='api/user/') }}{{ user['id'] }}.json", function(json) {
+					console.log("Successully acquired {{ user['id'] }} json")
+				});
+			} catch (e) {
+				console.log(e)
+			}
+		});
+	</script>
+{% endblock -%}
+
 {% block content -%}
 	{% if user -%}
 		<h1>{{ user['username'] }}'s profile</h1>

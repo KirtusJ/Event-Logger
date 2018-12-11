@@ -8,6 +8,20 @@
 	{% endif -%}
 {% endblock -%}
 
+{% block head -%}
+	<script type="text/javascript">
+		$(document).ready(function() {
+			try {
+				$.getJSON("{{ url_for('static', filename='api/room/') }}{{ room['id'] }}.json", function(json) {
+					console.log("Successully acquired {{ room['id'] }} json")
+				});
+			} catch (e) {
+				console.log(e)
+			}
+		});
+	</script>
+{% endblock -%}
+
 {% block content -%}
 	{% if room -%}
 		<h1>{{ room['name'] }}</h1>

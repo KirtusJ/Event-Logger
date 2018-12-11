@@ -16,7 +16,7 @@ try:
 	from string import ascii_uppercase
 	import os
 	import logging
-	import config
+	from config import api_directory
 	import json
 except Exception as e:
 	print(f"Error importing in controllers/PostController.py: {e}")
@@ -67,8 +67,8 @@ def create(_title, _body, _room):
 		'room' : [{'id' : post.room_id}, {'name' : post.room_name}], 'created_date' : str(post.created)
 	}
 
-	file = f"{config.api_directory}/post/{post.id}.json"
-	if os.path.exists(f"{config.api_directory}/post/"):
+	file = f"{api_directory}/post/{post.id}.json"
+	if os.path.exists(f"{api_directory}/post/"):
 		if not os.path.exists(file):
 			open(file, "w")
 			with open(file, "w") as json_file:
@@ -126,7 +126,7 @@ def update(_id, _title, _body):
 				return ErrorController.error(e)
 			print(f"Post: {_id} [updated]")
 			flash(u"Post {id} updated".format(id=_id))
-			file = f"{config.api_directory}/post/{post.id}.json"
+			file = f"{api_directory}/post/{post.id}.json"
 			if os.path.exists(file) and updated_title is True or updated_body is True:
 				with open (file, "rt") as fp:
 					data = json.load(fp)

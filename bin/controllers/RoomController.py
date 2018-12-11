@@ -16,7 +16,7 @@ try:
 	from random import choice
 	from string import ascii_uppercase
 	import logging
-	import config
+	from config import api_directory
 	import json
 	import os
 except Exception as e:
@@ -75,8 +75,8 @@ def create(_name, _description):
 	data = {'type' : 'room', 'name' : room.name, 'id' : room.id, 'description' : room.description, 'owner' : [{'id' : room.owner}, {'username' : room.owner_username}], 
 		'created_date' : str(room.created)
 	}
-	file = f"{config.api_directory}/room/{room.id}.json"
-	if os.path.exists(f"{config.api_directory}/room/"):
+	file = f"{api_directory}/room/{room.id}.json"
+	if os.path.exists(f"{api_directory}/room/"):
 		if not os.path.exists(file):
 			open(file, "w")
 			with open(file, "w") as json_file:
@@ -141,7 +141,7 @@ def update(_id, _name, _description):
 				return ErrorController.error(e)
 			print(f"Room: {_id} [updated]")
 			flash(u"Room {id} updated".format(id=_id))
-			file = f"{config.api_directory}/room/{room.id}.json"
+			file = f"{api_directory}/room/{room.id}.json"
 			if os.path.exists(file) and updated_name is True or updated_description is True:
 				with open (file, "rt") as fp:
 					data = json.load(fp)
