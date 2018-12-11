@@ -35,13 +35,13 @@ def destroyPost(id):
 	"""
 	return PostController.destroy(id)
 
-@routes.route('/post/<id>/')
-def showPost(id):
+@routes.route('/r/<room>/comments/<id>/')
+def showPost(room, id):
 	"""
 	Sends post id to PostController 
 	function show()
 	"""
-	return PostController.show(id)
+	return PostController.show(room, id)
 
 @routes.route('/post/<id>/edit', methods=['GET','POST'])
 @UserController.login_required

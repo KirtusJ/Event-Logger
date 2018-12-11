@@ -18,16 +18,22 @@ try:
 except Exception as e:
 	print(f"Error importing in controllers/PostController.py: {e}")
 
-def show(_id):
+def show(_room, _id):
 	"""
 	Shows the post view
 	based on given ID
 	"""
 	try:
+		room = Room.query.filter_by(name=_room).first()
+	except:
+		room = None
+	try:
 		post = Post.query.filter_by(id=_id).first()
 	except:
 		post = None
-	return render_template("post/post.htm.j2", post=post)
+
+
+	return render_template("post/post.htm.j2", room=room, post=post)
 
 def create(_title, _body, _room):
 	"""
