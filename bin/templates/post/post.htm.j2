@@ -27,6 +27,17 @@
 					<span><a href="/post/{{ post['id'] }}/edit">edit</a> <a href="/post/{{ post['id'] }}/delete">delete</a></span>
 				{% endif -%}
 			</div>
+			{% if g.user -%}
+				<form class="commentform" action="#" method="POST">
+					<input type="hidden" name="comment" value="create">
+					<input type="text" name="body" style="width: 400px; margin-bottom: 10px" placeholder="Write your comment here...">
+					<br>
+					<input type="submit" name="Submit">
+				</form>
+			{% endif -%}
+			<div class="comments">
+				<p>No comments</p>
+			</div>
 		{% else -%}
 			<p>Post not found</p>
 		{% endif -%}
