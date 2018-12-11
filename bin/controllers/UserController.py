@@ -63,6 +63,10 @@ def show(_username):
 		posts = Post.query.filter_by(author=user.id).all()
 	except:
 		posts = None
+	try:
+		owned_rooms = Room.query.filter_by(owner=user.id).all()
+	except:
+		owned_rooms = None
 
 	# Needed in case it is impossible to pass into the for loops
 	is_following=None
@@ -81,7 +85,8 @@ def show(_username):
 		for f in user.subscribed:
 			subscribed = user.subscribed
 
-	return render_template("user/profile.htm.j2", user=user, posts=posts, followers=followers, is_following=is_following, followed=followed, subscribed=subscribed)
+
+	return render_template("user/profile.htm.j2", user=user, posts=posts, followers=followers, is_following=is_following, followed=followed, subscribed=subscribed, owned_rooms=owned_rooms)
 
 def login(_username, _password):
 	"""
@@ -146,9 +151,12 @@ def logout():
 	If a session exists
 	"""
 	try:
-		flash(u"User {name} logged out".format(name=current_user.username))
-		print(f"User: {current_user.username} [logged out]")
-		logout_user()
+		if current_user.is_authenticated:
+			flash(u"User {name} logged out".format(name=current_user.username))
+			print(f"User: {current_user.username} [logged out]")
+			logout_user()
+		else:
+			return redirect(url_for('routes.index'))
 	except Exception as e:
 		logging.error(f"Error: {e}")
 		return ErrorController.error(e)

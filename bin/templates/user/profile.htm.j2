@@ -79,6 +79,17 @@
 		{% else -%}
 			<p>Subscribed: None</p>
 		{% endif -%}
+		{% if owned_rooms -%}
+			<p>Owned rooms: 
+			{% for room in owned_rooms -%}
+				{% if not loop.last -%}
+					<a href="/r/{{ room['name'] }}">{{ room['name'] }}</a>,
+				{% elif loop.last -%}
+					<a href="/r/{{ room['name'] }}">{{ room['name'] }}</a>
+				{% endif -%}
+			{% endfor -%}
+			</p>		
+		{% endif -%}
 		{% if user['id'] == g.user['id'] -%}
 			<form class="PostForm" action="/post/new" method="POST">
 				<input type="hidden" name="post" value="create">
