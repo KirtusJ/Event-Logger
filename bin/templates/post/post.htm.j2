@@ -1,10 +1,14 @@
 {% extends 'layout/default.htm.j2' -%}
 
 {% block title -%}
-	{% if post-%}
-		{{ post['title'] }}
+	{% if room-%}
+		{% if post -%}
+			{{ post['title'] }} : {{ room['name'] }}
+		{% else -%}
+			Post not found
+		{% endif -%}
 	{% else -%}
-		Post not found
+		Room not found
 	{% endif -%}
 {% endblock -%}
 
