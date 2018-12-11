@@ -11,6 +11,7 @@
 {% block content -%}
 	{% if room -%}
 		<p><a href="/r/{{ room['name'] }}">{{ room['name'] }}</a></p>
+		<p>{{ room['description'] }}</p>
 		{% if post -%}
 			<div class="post">
 				<h3 class="title">{{ post['title'] }}</h3>

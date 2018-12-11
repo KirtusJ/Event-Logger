@@ -60,7 +60,7 @@ def create(_title, _body, _room):
 		flash(u"An error has occured", 'error')
 		return redirect(url_for('routes.index'))
 	print(f"Post: {post.id} [created]")
-	return redirect(url_for('routes.showPost', id=post.id))
+	return redirect(url_for('routes.showPost',room=post.room_name,id=post.id))
 
 def destroy(_id):
 	"""
@@ -72,7 +72,7 @@ def destroy(_id):
 	except:
 		post = None
 	if post is not None:
-		if current_user.username == post.get_author() or g.admin:
+		if current_user.id == post.get_author() or g.admin:
 			try:
 				db.session.delete(post)
 				db.session.commit()
@@ -109,7 +109,7 @@ def update(_id, _title, _body):
 				return ErrorController.error(e)
 			print(f"Post: {_id} [updated]")
 			flash(u"Post {id} updated".format(id=_id))
-			return redirect(url_for('routes.showPost', id=post.id))
+			return redirect(url_for('routes.showPost', room=room.id, id=post.id))
 		else:
 			return ErrorController.error("403"), 403
 	else:
