@@ -73,7 +73,7 @@ def show(_username):
 	if user is not None:
 		for f in user.followers:
 			followers=user.followers
-			if user.id == f.id:
+			if current_user.is_authenticated and current_user.id == f.id: 
 				is_following=True
 				break
 		for f in user.followed:
@@ -222,11 +222,11 @@ def follow(_username):
 	except:
 		user = None
 	if user is not None:
-		user = None
 		try:
 			current_user.follow(user)
 			db.session.commit()
 		except Exception as e:
+			db.session.rollback()
 			logging.error(f"{e}")
 			return ErrorController.error(e)
 		return redirect(url_for("routes.showUser", username=user.username))
@@ -243,11 +243,11 @@ def unfollow(_username):
 	except:
 		user = None
 	if user is not None:
-		user = None
 		try:
 			current_user.unfollow(user)
 			db.session.commit()
 		except Exception as e:
+			db.session.rollback()
 			logging.error(f"{e}")
 			return ErrorController.error(e)
 		return redirect(url_for("routes.showUser", username=user.username))

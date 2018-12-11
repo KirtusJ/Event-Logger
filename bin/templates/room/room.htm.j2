@@ -13,7 +13,7 @@
 		<h1>{{ room['name'] }}</h1>
 		<p>ID: [{{ room['id'] }}]</p>
 		<p>{{ room['description'] }}</p>
-		<p>Owner: [{{ room['owner_username'] }}]</p>
+		<p>Owner: <a href="/u/{{ room['owner_username'] }}">{{ room['owner_username'] }}</a></p>
 		<p>{{ room['created'] }}</p>
 		{% if g.user -%}
 			{% if is_subscribed -%}		
