@@ -19,7 +19,6 @@ def show():
 
 	post = Post.query.order_by(Post.created.desc()).all()
 	subscribed=None
-	posts=None
 	for f in current_user.subscribed:
 		subscribed=current_user.subscribed
 
