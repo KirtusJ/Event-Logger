@@ -71,10 +71,6 @@ class Post(db.Model):
 	def set_body(self, body):
 		self.body = body
 
-	def set_room(self, id, name):
-		self.room_id = id
-		self.room_name = name
-
 	def get_id(self):
 		return f"{self.id}"
 
@@ -84,3 +80,6 @@ class Post(db.Model):
 	def set_room(self, room_id, room_name):
 		self.room_id = room_id
 		self.room_name = room_name
+
+	def get_room(self):
+		return self.room_id

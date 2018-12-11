@@ -18,16 +18,12 @@ def show():
 	"""
 
 	post = Post.query.order_by(Post.created.desc()).all()
-	followed=None
+	subscribed=None
 	posts=None
-	try:
-		posts = Post.query.order_by(Post.created.desc()).all()
-		for f in current_user.followed:
-			followed=current_user.followed
-	except:
-		posts = post
+	for f in current_user.subscribed:
+		subscribed=current_user.subscribed
 
-	return render_template('index/index.htm.j2', users=users, posts=posts, followed=followed)
+	return render_template('index/index.htm.j2', users=users, posts=post, subscribed=subscribed)
 def users():
 	"""
 	Shows the users view

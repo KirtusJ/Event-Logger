@@ -4,23 +4,44 @@
 
 {% block content -%}
 	{% if posts -%}
-		{% for post in posts -%}
-			<div class="post">
-			<h3 class="title">{{ post['title'] }}</h3>
-			<p class="body">{{ post['body'] }}</p>
-			<p>{{ post['created'] }}</p>
-			<span><a href="/r/{{ post['room_name'] }}/comments/{{ post['id'] }}">comments</a> <a href="/u/{{ post['author_username'] }}">author</a></span>
-			<span><a href="/r/{{ post['room_name'] }}">room</a></span>
-			{% if g.user.username == post['author_username'] or g.admin -%}
-				<span><a href="/post/{{ post['id'] }}/edit">edit</a> <a href="/post/{{ post['id'] }}/delete">delete</a></span>
-			{% endif -%}
-			</div>
-			<br>
-		{% endfor -%}
+		{% if subscribed -%}
+			{% for s in subscribed -%}
+				{% for post in posts -%}
+					{% if post -%}
+						{% if post['room_id'] == s['id'] -%}
+							<div class="post">
+							<h3 class="title">{{ post['title'] }}</h3>
+							<p class="body">{{ post['body'] }}</p>
+							<p>{{ post['created'] }}</p>
+							<span><a href="/r/{{ post['room_name'] }}/comments/{{ post['id'] }}">comments</a> <a href="/u/{{ post['author_username'] }}">author</a></span>
+							<span><a href="/r/{{ post['room_name'] }}">room</a></span>
+							{% if g.user.username == post['author_username'] or g.admin -%}
+								<span><a href="/post/{{ post['id'] }}/edit">edit</a> <a href="/post/{{ post['id'] }}/delete">delete</a></span>
+							{% endif -%}
+							</div>
+							<br>
+						{% endif -%}
+					{% else -%}
+						<p>No posts</p>
+					{% endif -%}
+				{% endfor -%}
+			{% endfor -%}
+		{% else -%}
+			{% for post in posts -%}
+				<div class="post">
+				<h3 class="title">{{ post['title'] }}</h3>
+				<p class="body">{{ post['body'] }}</p>
+				<p>{{ post['created'] }}</p>
+				<span><a href="/r/{{ post['room_name'] }}/comments/{{ post['id'] }}">comments</a> <a href="/u/{{ post['author_username'] }}">author</a></span>
+				<span><a href="/r/{{ post['room_name'] }}">room</a></span>
+				{% if g.user.username == post['author_username'] or g.admin -%}
+					<span><a href="/post/{{ post['id'] }}/edit">edit</a> <a href="/post/{{ post['id'] }}/delete">delete</a></span>
+				{% endif -%}
+				</div>
+				<br>
+			{% endfor -%}
+		{% endif -%}
 	{% else -%}
 		<p>No posts</p>
 	{% endif -%}
-
 {% endblock -%}
-
-
