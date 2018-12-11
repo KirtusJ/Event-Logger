@@ -25,10 +25,12 @@
 		{% endif -%}
 		<br>
 		{% if not user['id'] == g.user['id'] -%}
-			{% if is_following -%}
-				<span><a href="/u/{{ user['username'] }}/unfollow">unfollow</a></span>
-			{% else -%}
-				<span><a href="/u/{{ user['username'] }}/follow">follow</a></span>
+			{% if g.user -%}
+				{% if is_following -%}
+					<span><a href="/u/{{ user['username'] }}/unfollow">unfollow</a></span>
+				{% else -%}
+					<span><a href="/u/{{ user['username'] }}/follow">follow</a></span>
+				{% endif -%}
 			{% endif -%}
 			{% if g.admin and not "admin" in user['roles'] -%}
 				{% if "banned" not in user['roles'] -%}
