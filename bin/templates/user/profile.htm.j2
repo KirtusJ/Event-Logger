@@ -25,6 +25,9 @@
 {% block content -%}
 	{% if user -%}
 		<h1>{{ user['username'] }}'s profile</h1>
+		{% if profile_picture -%}
+			<img src="{{ profile_picture.locate() }}" height="120" width="120">
+		{% endif -%}
 		{% if "admin" in user['roles'] -%}
 			<h1 style="color: red">ADMIN</h1>
 		{% endif -%}

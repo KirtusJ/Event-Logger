@@ -2,9 +2,11 @@ migrations/
 tests/
 instance/
 bin/static/api/
+bin/static/img/profile-picture/
 config.py
 console.log
 venv/
 __pycache__/
 *.pyo
 *.pyc
+a.out

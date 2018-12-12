@@ -4,7 +4,16 @@
 
 {% block content -%}
 	<h1>{{ user['username'] }}'s profile</h1>
-	<form class="user" action="/user/edit" method="POST">
+	<form class="user" action="/user/edit" method="POST" enctype="multipart/form-data">
+		<input type="hidden" name="user" name="update-profile-picture">
+		<label>Profile Picture</label>
+		<br>
+		<input type="file" name="file" style="width: 400px; margin-bottom: 30px" accept="image/*">
+		<br>
+		<input type="submit" name="Submit">
+	</form>
+	<br>
+	<form class="user" action="/user/edit" method="POST" enctype="multipart/form-data">
 		<input type="hidden" name="user" value="update">
 		<input type="text" name="username" style="width: 400px; margin-bottom: 30px" value="{{ user['username'] }}">
 		<br>

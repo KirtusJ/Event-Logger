@@ -136,6 +136,9 @@ def updateUser():
 			bio = flask.request.form["bio"]
 			password = flask.request.form["password"]
 			return UserController.update(username,email,bio,password)
+		else:
+			profile_picture = flask.request.files["file"]
+			return UserController.updateProfilePicture(profile_picture)
 	elif flask.request.method == "GET":
 		return UserController.updateView()
 	else:

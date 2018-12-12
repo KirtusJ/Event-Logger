@@ -20,6 +20,10 @@ try:
 	import os
 	from config import api_directory
 	import json
+	import bin.__init__ as main
+	from sqlalchemy_imageattach.context import store_context
+	import sys
+	import base64
 except Exception as e:
 	print(f"Error importing in controllers/UserController.py: {e}")
 
@@ -76,7 +80,7 @@ def show(_username):
 	followers=None
 	followed=None
 	subscribed=None
-
+	profile_picture=None
 	if user is not None:
 		for f in user.followers:
 			followers=user.followers
@@ -87,9 +91,11 @@ def show(_username):
 			followed=user.followed
 		for f in user.subscribed:
 			subscribed = user.subscribed
+		with store_context(main.AppClass.store):
+			profile_picture = user.picture
+			return render_template("user/profile.htm.j2", user=user, posts=posts, followers=followers, is_following=is_following, followed=followed, subscribed=subscribed, owned_rooms=owned_rooms, profile_picture=profile_picture)
+	return render_template("user/profile.htm.j2", user=user, posts=posts, followers=followers, is_following=is_following, followed=followed, subscribed=subscribed, owned_rooms=owned_rooms, profile_picture=profile_picture)
 
-
-	return render_template("user/profile.htm.j2", user=user, posts=posts, followers=followers, is_following=is_following, followed=followed, subscribed=subscribed, owned_rooms=owned_rooms)
 
 def login(_username, _password):
 	"""
@@ -139,15 +145,21 @@ def register(_username, _email, _password):
 		user = User(username=_username, email=_email, roles=f"{User.default_role}")
 		user.set_password(_password)
 		user.set_id(''.join(choice(ascii_uppercase) for i in range(12)))
+		with store_context(main.AppClass.store):
+			with open("bin/static/img/default.png", "rb") as default:
+				user.picture.from_file(default)
 	except Exception as e:
 		logging.error(f"Error: {e}")
 		return ErrorController.error(e)
-	db.session.add(user)
-	db.session.commit()
+	with store_context(main.AppClass.store):
+		db.session.add(user)
+		db.session.commit()
 	print(f"User: {user.username} [registered]")
 	flash(u"User {name} has been created".format(name=_username))
-
-	data = {'type' : 'user', 'username' : user.username, 'id' : user.id, 'email' : user.email, 'roles' : user.roles, 'created_date' : str(user.created), 'bio' : None}
+	with store_context(main.AppClass.store):
+		data = {'type' : 'user', 'username' : user.username, 'id' : user.id, 'email' : user.email, 
+		'roles' : user.roles, 'created_date' : str(user.created), 'bio' : None, 'profile_picture_url' : user.picture.locate()
+		}
 	file = f"{api_directory}/user/{user.id}.json"
 	if os.path.exists(f"{api_directory}/user/"):
 		if not os.path.exists(file):
@@ -366,7 +378,7 @@ def update(_username, _email, _bio, _password):
 				try:
 					post.set_author(current_user.id, _username)
 				except Exception as e:
-					logging.error(f"Error: {e}")
+					logging.error(f"{e}")
 					return ErrorController.error(e)
 			current_user.set_username(_username)
 			updated_username = True
@@ -413,7 +425,35 @@ def update(_username, _email, _bio, _password):
 		with open(file, "wt") as json_file:
 			json.dump(data, json_file)
 	return redirect(url_for('routes.showUser', username=current_user.username))
+
+def updateProfilePicture(_profile_picture):
+	if _profile_picture.filename == '':
+		flash(u"No file uploaded")
+		return redirect(url_for("routes.updateUser"))
+	else:
+		try:
+			with store_context(main.AppClass.store):
+				current_user.picture.from_file(_profile_picture)
+				db.session.commit()
+		except Exception as e:
+			db.session.rollback()
+			logging.error(f"{e}")
+			return f"{e} on line {sys.exc_info()[-1].tb_lineno}"
+	print(f"User {current_user.username} [updated]")
+	flash(u"Profile updated")
+
+	file = f"{api_directory}/user/{current_user.id}.json"
+	if os.path.exists(file):
+		with open (file, "rt") as fp:
+			data = json.load(fp)
+		with store_context(main.AppClass.store):
+			data["profile_picture_url"] = current_user.picture.locate()
+			with open(file, "wt") as json_file:
+				json.dump(data, json_file)
+
+	return redirect(url_for('routes.showUser', username=current_user.username))
 def updateView():
 	if not current_user.is_authenticated:
 		return redirect(url_for('routes.createSessionView'))
 	return render_template("user/edituser.htm.j2", user=current_user)
+

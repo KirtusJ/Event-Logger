@@ -10,6 +10,7 @@ try:
     pymysql.install_as_MySQLdb()
     from flask.logging import default_handler
     import logging
+    from sqlalchemy_imageattach.stores.fs import HttpExposedFileSystemStore
 except ImportError as IE:
     print(IE)
 
@@ -17,7 +18,16 @@ except ImportError as IE:
 def http_error(e):
     return EC.error(e), e.code
 
-def create_app(test_config=None):
+class AppClass():
+    app = Flask(__name__, instance_relative_config=True)
+    store = HttpExposedFileSystemStore(
+        path='bin/static/img/',
+        prefix='static/img/',
+        host_url_getter=lambda:
+            'http://127.0.0.1:5000/'
+    )
+
+def create_app():
     """
     Creates and configures the Flask App
     1. Initializes Database Configs
@@ -26,7 +36,7 @@ def create_app(test_config=None):
     4. Initializes Blueprints
     5. Creates the Database if it doesn't already exist
     """
-    app = Flask(__name__, instance_relative_config=True)
+    app = AppClass.app
     app.config.from_mapping(
         SECRET_KEY=config.secret_key,
         SQLALCHEMY_DATABASE_URI=config.db_link,
@@ -61,3 +71,7 @@ def create_app(test_config=None):
         db.create_all()
 
     return app
+
+def commit():
+    with AppClass.app.app_context():
+        db.session.commit()

@@ -2,7 +2,11 @@ try:
 	from . import db, guard, cors
 	from .room import Room
 	from sqlalchemy.ext.hybrid import hybrid_property
+	from sqlalchemy_imageattach.entity import Image, image_attachment
 	from datetime import datetime
+	from random import choice
+	from string import ascii_uppercase
+	import hashlib
 except ImportError as IE:
 	print(f"Error importing in models/user.py: {IE}")
 
@@ -25,6 +29,8 @@ class User(db.Model):
 	roles = db.Column(db.Text)
 	created = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 	bio = db.Column(db.Text)
+	picture = image_attachment('ProfilePicture')
+
 	
 	default_role = "user"
 	admin_role = "admin"
@@ -132,3 +138,13 @@ class User(db.Model):
 
 	def unsubscribe(self, room):
 		self.subscribed.remove(room)
+
+class ProfilePicture(db.Model, Image):
+	""" User Profile Picture"""
+
+	user_id = db.Column(db.String(12), db.ForeignKey('user.id'), primary_key=True)
+	user = db.relationship('User')
+
+	@property
+	def object_id(self):
+		return int(hashlib.sha1(self.user_id.encode('utf-8')).hexdigest(), 16) % (10 ** 8)
