@@ -6,6 +6,8 @@ A web app developed with Python using the Flask framework. Currently in early de
 
 Read Requirements.txt to see all required libraries
 
+- Requires ImageMagick 6.9.10 with Headers And Libraries for C and C++
+
 - virtualenv .env && source .env/bin/activate && pip install -r requirements.txt (or equivelant)
 
 Flask Libraries in use:
