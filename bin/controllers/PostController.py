@@ -10,6 +10,7 @@ try:
 	)
 	from bin.models.post import Post
 	from bin.models.room import Room
+	from bin.models.comment import Comment
 	from . import ErrorController
 
 	from random import choice
@@ -18,8 +19,9 @@ try:
 	import logging
 	from config import api_directory
 	import json
-except Exception as e:
-	print(f"Error importing in controllers/PostController.py: {e}")
+	import sys
+except ImportError as IE:
+	print(f"Error importing in controllers/PostController.py: {IE}")
 
 def show(_room, _id):
 	"""
@@ -35,8 +37,12 @@ def show(_room, _id):
 	except:
 		post = None
 
+	try:
+		comments = Comment.query.filter_by(post_id=post.id).all()
+	except:
+		comments = None
 
-	return render_template("post/post.htm.j2", room=room, post=post)
+	return render_template("post/post.htm.j2", room=room, post=post, comments=comments)
 
 def create(_title, _body, _room):
 	"""
@@ -103,7 +109,9 @@ def destroy(_id):
 
 def update(_id, _title, _body):
 	"""
-	Updates post
+	Updates a post through a given ID
+	Ensures that current_user is the post author or an admin
+	Updates if any applicable column has been changed
 	"""
 	try:
 		post = Post.query.filter_by(id=_id).first()
@@ -143,7 +151,11 @@ def update(_id, _title, _body):
 		flash(u"Post {id} doesn't exist".format(id=_id))
 		return redirect(url_for('routes.index'))
 
-def updateView(_id):
+def update_view(_id):
+	"""
+	Checks if given post_id exists
+	Renders the edit post template with said given id
+	"""
 	try:
 		post = Post.query.filter_by(id=_id).first()
 	except:

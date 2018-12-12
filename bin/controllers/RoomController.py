@@ -19,8 +19,8 @@ try:
 	from config import api_directory
 	import json
 	import os
-except Exception as e:
-	print(f"Error importing in controllers/RoomController.py: {e}")
+except ImportError as IE:
+	print(f"Error importing in controllers/RoomController.py: {IE}")
 
 def show(_name):
 	""" 
@@ -158,7 +158,7 @@ def update(_id, _name, _description):
 		flash(u"Room {id} doesn't exist".format(id=_id))
 		return redirect(url_for('routes.index'))
 
-def updateView(_id):
+def update_view(_id):
 	try:
 		room = Room.query.filter_by(id=_id).first()
 	except:
@@ -172,3 +172,44 @@ def updateView(_id):
 		flash(u"Room {id} doesn't exist".format(id=_id))
 		return redirect(url_for('routes.index'))
 	
+def subscribe(_id):
+	"""
+	Adds a subscription to specified_room by current_user
+	Adds a subscriber to specified_room by current_user
+	"""
+	try:
+		room = Room.query.filter_by(id=_id).first()
+	except Exception as e:
+		room = None
+	if room is not None:
+		try:
+			current_user.subscribe(room)
+			db.session.commit()
+		except Exception as e:
+			db.session.rollback()
+			logging.error(f"{e}")
+			return ErrorController.error(e)
+		return redirect(url_for("routes.showRoom", name=room.name))
+	flash(u"Room: {id} doesn't exist".format(id=_id))
+	return redirect(url_for("routes.index"))
+	
+def unsubscribe(_id):
+	"""
+	Removes a subscription to specified_room by current_user
+	Removes a subscriber to specified_room by current_user
+	"""
+	try:
+		room = Room.query.filter_by(id=_id).first()
+	except:
+		room = None
+	if room is not None:
+		try:
+			current_user.unsubscribe(room)
+			db.session.commit()
+		except Exception as e:
+			db.session.rollback()
+			logging.error(f"{e}")
+			return ErrorController.error(e)
+		return redirect(url_for("routes.showRoom", name=room.name))
+	flash(u"Room: {id} doesn't exist".format(id=_id))
+	return redirect(url_for("routes.index"))

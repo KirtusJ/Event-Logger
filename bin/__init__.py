@@ -1,18 +1,20 @@
 import os
 
+if not os.path.isfile("config.py"):
+    open("config.py", "w") 
+
 try:
     import config
     from flask import Flask
     from bin.routes import routes
-    from bin.models import model, db, guard
+    from bin.models import model, db
     from bin.controllers import ErrorController as EC
     import pymysql
     pymysql.install_as_MySQLdb()
-    from flask.logging import default_handler
     import logging
     from sqlalchemy_imageattach.stores.fs import HttpExposedFileSystemStore
 except ImportError as IE:
-    print(IE)
+    print(f"Error importing in __init__.py: {IE}")
 
 # Handles http error codes
 def http_error(e):
@@ -20,12 +22,16 @@ def http_error(e):
 
 class AppClass():
     app = Flask(__name__, instance_relative_config=True)
-    store = HttpExposedFileSystemStore(
-        path='bin/static/img/',
-        prefix='static/img/',
-        host_url_getter=lambda:
-            'http://127.0.0.1:5000/'
-    )
+    try:
+        store = HttpExposedFileSystemStore(
+            path='bin/static/img/',
+            prefix='static/img/',
+            host_url_getter=lambda:
+                config.host
+        )
+    except Exception as e:
+        print(f"Error initializing store. Probably forgot to setup config.py. {e}")
+    app_config = config
 
 def create_app():
     """
@@ -36,17 +42,24 @@ def create_app():
     4. Initializes Blueprints
     5. Creates the Database if it doesn't already exist
     """
+
     app = AppClass.app
-    app.config.from_mapping(
-        SECRET_KEY=config.secret_key,
-        SQLALCHEMY_DATABASE_URI=config.db_link,
-        SQLALCHEMY_TRACK_MODIFICATIONS=config.db_track,
-        JWT_ACCESS_LIFESPAN=config.jwt_access,
-        JWT_REFRESH_LIFESPAN=config.jwt_refresh
-    )
+    try:
+        app.config.from_mapping(
+            SECRET_KEY=config.secret_key,
+            SQLALCHEMY_DATABASE_URI=config.db_link,
+            SQLALCHEMY_TRACK_MODIFICATIONS=config.db_track,
+            JWT_ACCESS_LIFESPAN=config.jwt_access,
+            JWT_REFRESH_LIFESPAN=config.jwt_refresh
+        )
+    except:
+        print("Config file not configured or configured incorrectly")
 
     # Defines the logging file, mode, and format
-    logging.basicConfig(filename=config.logging_file, filemode='w', format='%(name)s - %(levelname)s - %(message)s')
+    try:
+        logging.basicConfig(filename=config.logging_file, filemode='w', format='%(name)s - %(levelname)s - %(message)s')
+    except:
+        print("Config file not configured or configured incorrectly")
 
     # Catch http error codes
     try:

@@ -7,7 +7,7 @@ try:
 except ImportError as IE:
 	print(f"Error importing in models/post.py: {IE}")
 
-class Post(db.Model):
+class Comment(db.Model):
 	"""
 	Initializes the Post Table
 	Sets up the following columns
@@ -21,22 +21,33 @@ class Post(db.Model):
 	8. The time the post was created (created)
 	"""
 	id = db.Column(db.String(12), unique=True, primary_key=True)
-	title = db.Column(db.String(120), nullable=False)
 	body = db.Column(db.String(1000), nullable=False)
 	author = db.Column(db.String(12), db.ForeignKey('user.id'))
 	author_username = db.Column(db.String(100))
-	room_id = db.Column(db.String(12), db.ForeignKey('room.id'))
-	room_name = db.Column(db.String(120))
+	post_id = db.Column(db.String(12), db.ForeignKey('post.id'))
 	created = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 
-	def __repr__(self):
-		return f'<Post: {self.id}>'
+	comments = db.Table('comments',
+		db.Column('comment_id', db.String(12), db.ForeignKey("comment.id")),
+		db.Column('comments_id', db.String(12), db.ForeignKey("comment.id")),
+		db.UniqueConstraint('comment_id', 'comments_id', name='uix_1')
+	)
 
-	def __init__(self, title, body):
+	"""
+	To be done
+	1. Setting up room relationships
+	
+	room_id = db.Column(db.String(12), db.ForeignKey('room.id'))
+	room = db.relationship('Room', backref-db.backref('posts', lazy=True))
+	"""
+
+	def __repr__(self):
+		return f'<Comment: {self.id}>'
+
+	def __init__(self, body):
 		""" Used for Initializing the Post"""
-		self.title = title
 		self.body = body
-		super(Post,self).__init__()
+		super(Comment,self).__init__()
 
 	@classmethod
 	def lookup(cls, id):
@@ -57,8 +68,8 @@ class Post(db.Model):
 		self.author = id 
 		self.author_username = username
 
-	def set_title(self, title):
-		self.title = title
+	def set_post(self, post_id):
+		self.post_id = post_id
 
 	def set_body(self, body):
 		self.body = body
@@ -68,10 +79,3 @@ class Post(db.Model):
 
 	def get_author(self):
 		return self.author
-
-	def set_room(self, room_id, room_name):
-		self.room_id = room_id
-		self.room_name = room_name
-
-	def get_room(self):
-		return self.room_id

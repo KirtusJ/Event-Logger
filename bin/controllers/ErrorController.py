@@ -2,8 +2,8 @@ try:
 	from flask import (
 		render_template
 	)
-except Exception as e:
-	print(f"Error import in controllers/ErrorController.py: {e}")
+except ImportError as IE:
+	print(f"Error import in controllers/ErrorController.py: {IE}")
 	
 def error(e):
 	"""

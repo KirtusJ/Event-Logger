@@ -24,8 +24,8 @@ try:
 	from sqlalchemy_imageattach.context import store_context
 	import sys
 	import base64
-except Exception as e:
-	print(f"Error importing in controllers/UserController.py: {e}")
+except ImportError as IE:
+	print(f"Error importing in controllers/UserController.py: {IE}")
 
 """ Work on naming conventions """
 
@@ -97,7 +97,7 @@ def show(_username):
 	return render_template("user/profile.htm.j2", user=user, posts=posts, followers=followers, is_following=is_following, followed=followed, subscribed=subscribed, owned_rooms=owned_rooms, profile_picture=profile_picture)
 
 
-def login(_username, _password):
+def create_session(_username, _password):
 	"""
 	Logs in specified user if all criteria is met
 	1. User exists
@@ -127,7 +127,7 @@ def login(_username, _password):
 		flash(u'Incorrect password', 'error')
 		return redirect(url_for('routes.createSessionView'))
 
-def register(_username, _email, _password):
+def create_user(_username, _email, _password):
 	"""
 	Registers a user if all criteria is met
 	1. User doesn't exist
@@ -169,7 +169,7 @@ def register(_username, _email, _password):
 
 	return redirect(url_for('routes.createSessionView'))
 
-def logout():
+def destroy_session():
 	"""
 	Logs out current_user
 	If a session exists
@@ -294,49 +294,7 @@ def unfollow(_username):
 	flash(u"User: {username} doesn't exist".format(username=_username))
 	return redirect(url_for("routes.index"))
 
-def subscribe(_id):
-	"""
-	Adds a subscription to specified_room by current_user
-	Adds a subscriber to specified_room by current_user
-	"""
-	try:
-		room = Room.query.filter_by(id=_id).first()
-	except Exception as e:
-		room = None
-	if room is not None:
-		try:
-			current_user.subscribe(room)
-			db.session.commit()
-		except Exception as e:
-			db.session.rollback()
-			logging.error(f"{e}")
-			return ErrorController.error(e)
-		return redirect(url_for("routes.showRoom", name=room.name))
-	flash(u"Room: {id} doesn't exist".format(id=_id))
-	return redirect(url_for("routes.index"))
-
-def unsubscribe(_id):
-	"""
-	Removes a subscription to specified_room by current_user
-	Removes a subscriber to specified_room by current_user
-	"""
-	try:
-		room = Room.query.filter_by(id=_id).first()
-	except:
-		room = None
-	if room is not None:
-		try:
-			current_user.unsubscribe(room)
-			db.session.commit()
-		except Exception as e:
-			db.session.rollback()
-			logging.error(f"{e}")
-			return ErrorController.error(e)
-		return redirect(url_for("routes.showRoom", name=room.name))
-	flash(u"Room: {id} doesn't exist".format(id=_id))
-	return redirect(url_for("routes.index"))
-
-def getUser():
+def get():
 	"""
 	Sets global user variables
 	If current_user exists, g.user does
@@ -426,7 +384,7 @@ def update(_username, _email, _bio, _password):
 			json.dump(data, json_file)
 	return redirect(url_for('routes.showUser', username=current_user.username))
 
-def updateProfilePicture(_profile_picture):
+def update_profile_picture(_profile_picture):
 	if _profile_picture.filename == '':
 		flash(u"No file uploaded")
 		return redirect(url_for("routes.updateUser"))
@@ -452,8 +410,7 @@ def updateProfilePicture(_profile_picture):
 				json.dump(data, json_file)
 
 	return redirect(url_for('routes.showUser', username=current_user.username))
-def updateView():
+def update_view():
 	if not current_user.is_authenticated:
 		return redirect(url_for('routes.createSessionView'))
 	return render_template("user/edituser.htm.j2", user=current_user)
-

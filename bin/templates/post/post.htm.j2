@@ -16,13 +16,30 @@
 	<script type="text/javascript">
 		$(document).ready(function() {
 			try {
+				$.getJSON("{{ url_for('static', filename='api/room/') }}{{ room['id'] }}.json", function(json) {
+					console.log("Successfully acquired Room: {{ room['id'] }}")
+				});
 				$.getJSON("{{ url_for('static', filename='api/post/') }}{{ post['id'] }}.json", function(json) {
-					console.log("Successully acquired {{ post['id'] }} json")
+					console.log("Successfully acquired Post: {{ post['id'] }}")
 				});
 			} catch (e) {
 				console.log(e)
 			}
 		});
+		function reply_click(clicked_id) {
+			form = document.getElementById('form-' + clicked_id)
+			if(form.innerHTML=="") {
+				form.innerHTML = 
+				"<form class='reply-form' action='/r/{{ room['name'] }}/comments/{{ post['id'] }}/comment/" + clicked_id + "/reply'>\
+					<input type='hidden' name='comment' value='reply'>\
+					<input type='text' name='body' class='body' style='width: 400px; margin-bottom: 10px' placeholder='Write your reply here...''>\
+					<br>\
+					<input type='submit' name='Submit' value='Reply'>\
+				</form>"
+			} else {
+				form.innerHTML = ""
+			}
+		}
 	</script>
 {% endblock -%}
 
@@ -35,22 +52,44 @@
 				<h3 class="title">{{ post['title'] }}</h3>
 				<p class="body">{{ post['body'] }}</p>
 				<p class="created">{{ post['created'] }}</p>
-				<span><a href="/r/{{ post['room_name'] }}/comments/{{ post['id'] }}">comments</a> <a href="/u/{{ post['author_username'] }}">author</a></span>
+				<span><a href="/r/{{ post['room_name'] }}/comments/{{ post['id'] }}">link</a> <a href="/u/{{ post['author_username'] }}">author</a></span>
 				<span><a href="/r/{{ post['room_name'] }}">room</a></span>
 				{% if g.user.username == post['author_username'] -%}
 					<span><a href="/post/{{ post['id'] }}/edit">edit</a> <a href="/post/{{ post['id'] }}/delete">delete</a></span>
 				{% endif -%}
 			</div>
 			{% if g.user -%}
-				<form class="commentform" action="#" method="POST">
+				<form class="comment-form" action="/r/{{ room['name'] }}/comments/{{ post['id'] }}/comment/new" method="POST">
 					<input type="hidden" name="comment" value="create">
 					<input type="text" name="body" style="width: 400px; margin-bottom: 10px" placeholder="Write your comment here...">
 					<br>
-					<input type="submit" name="Submit">
+					<input type="submit" name="Submit" value="Post comment">
 				</form>
 			{% endif -%}
-			<div class="comments">
-				<p>No comments</p>
+			<div id="comments">
+				{% if comments -%}
+				<br>
+					{% for comment in comments -%}
+						<div class="comment">
+							<span id="{{ comment['id'] }}"></span>
+							<p class="body">{{ comment['body'] }}</p>
+							<p class="created">{{ comment['created'] }}</p>
+							<a href="/r/{{ room['name'] }}/comments/{{ post['id'] }}/comment/{{ comment['id'] }}">link</a>
+							<span><a href="/u/{{ comment['author_username'] }}">author</a></span>
+							<span><a href="/r/{{ post['room_name'] }}">room</a></span>
+							{% if g.user -%}
+							<span><a href="#">reply</a></span>
+							{% endif -%}
+							{% if g.user.username == comment['author_username'] -%}
+								<span id="{{ comment['id'] }}" onclick="reply_click(this.id)">edit</span> <span><a href="#">delete</a></span>
+							{% endif -%}
+							<span id="form-{{ comment['id'] }}"></span>
+						</div>
+						<br>
+					{% endfor -%}
+				{% else -%}
+					<p>No comments</p>
+				{% endif -%}
 			</div>
 		{% else -%}
 			<p>Post not found</p>

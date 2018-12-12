@@ -1,23 +1,24 @@
 try:
 	from . import routes
-	import flask
-	from flask import render_template
+	from flask import render_template, request
 	from bin.controllers import ErrorController, UserController, RoomController
-	from flask_login import current_user
 except ImportError as IE:
 	print(f"Error importing in routes/rooms.py: {IE}")
 
-@routes.route('/r/<name>/')
-def showRoom(name):
+@routes.route('/r/<name>/', methods=['POST', 'GET'])
+def show_room(name):
 	"""
 	Sends name to RoomController
 	function show()
 	"""
-	return RoomController.show(name)
+	if request.method == "GET":
+		return RoomController.show(name)
+	else:
+		return ErrorController.error("404"), 404
 
 @routes.route('/room/new', methods=['POST', 'GET'])
 @UserController.login_required
-def createRoom():
+def create_room():
 	"""
 	Ensures current_user
 
@@ -31,20 +32,17 @@ def createRoom():
 	if GET
 	Renders createroom template (TBD)
 	"""
-	if flask.request.method == "POST":
-		if flask.request.form["room"] == "create":
-			name = flask.request.form["name"]
-			description = flask.request.form["description"]
+	if request.method == "POST":
+		if request.form["room"] == "create":
+			name = request.form["name"]
+			description = request.form["description"]
 			return RoomController.create(name,description)
-		else:
-			return "fish"
-			# return render_template("room/createroom.htm.j2")
 	else:
 		return ErrorController.error("404"), 404
 
 @routes.route('/room/<id>/edit', methods=['POST','GET'])
 @UserController.login_required
-def updateRoom(id):
+def update_room(id):
 	"""
 	Ensures current_user
 	
@@ -58,12 +56,33 @@ def updateRoom(id):
 	if GET
 	Renders editroom template (TBD)
 	"""
-	if flask.request.method == "POST":
-		if flask.request.form["room"] == "update":
-			name = flask.request.form["name"]
-			description = flask.request.form["description"]
+	if request.method == "POST":
+		if request.form["room"] == "update":
+			name = request.form["name"]
+			description = request.form["description"]
 			return RoomController.update(id,name,description)
-	elif flask.request.method == "GET":
-		return RoomController.updateView(id)
+	elif request.method == "GET":
+		return RoomController.update_view(id)
 	else:
 		return ErrorController.error("404"), 404	
+
+@routes.route('/room/<id>/subscribe/')
+@UserController.login_required
+def subscribe_room(id):
+	"""
+	These should probably be handled in room route and room controller
+	Verifies current_user
+	Sends room id to UserController
+	function subscribe()
+	"""
+	return RoomController.subscribe(id)
+
+@routes.route('/room/<id>/unsubscribe/')
+@UserController.login_required
+def unsubscribe_room(id):
+	"""
+	Verifies current_user
+	Sends room id to UserController
+	function subscribe()
+	"""
+	return RoomController.unsubscribe(id)

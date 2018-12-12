@@ -1,0 +1,81 @@
+{% extends 'layout/default.htm.j2' -%}
+
+{% block title -%}
+	{% if room-%}
+		{% if post -%}
+			{{ post['title'] }} : {{ room['name'] }}
+		{% else -%}
+			Post not found
+		{% endif -%}
+	{% else -%}
+		Room not found
+	{% endif -%}
+{% endblock -%}
+
+{% block head -%}
+	<script type="text/javascript">
+		$(document).ready(function() {
+			try {
+				$.getJSON("{{ url_for('static', filename='api/post/') }}{{ post['id'] }}.json", function(json) {
+					console.log("Successully acquired Post: {{ post['id'] }}")
+				});
+				$.getJSON("{{ url_for('static', filename='api/room/') }}{{ room['id'] }}.json", function(json) {
+					console.log("Successully acquired Room: {{ room['id'] }}")
+				});
+				$.getJSON("{{ url_for('static', filename='api/comment/') }}{{ comment['id'] }}.json", function(json) {
+					console.log("Successully acquired Comment: {{ comment['id'] }}")
+				});
+			} catch (e) {
+				console.log(e)
+			}
+		});
+		function reply_click(clicked_id) {
+			form = document.getElementById('form-' + clicked_id)
+			if(form.innerHTML=="") {
+				form.innerHTML = 
+				"<form class='reply-form' action='/r/{{ room['name'] }}/comments/{{ post['id'] }}/comment/" + clicked_id + "/reply'>\
+					<input type='hidden' name='comment' value='reply'>\
+					<input type='text' name='body' class='body' style='width: 400px; margin-bottom: 10px' placeholder='Write your reply here...''>\
+					<br>\
+					<input type='submit' name='Reply'>\
+				</form>"
+			} else {
+				form.innerHTML = ""
+			}
+		}
+	</script>
+{% endblock -%}
+
+{% block content -%}
+	{% if room -%}
+		<p><a href="/r/{{ room['name'] }}">{{ room['name'] }}</a></p>
+		<p>{{ room['description'] }}</p>
+		{% if post -%}
+			<h3>{{ post['title'] }}</h3>
+			{% if comment -%}
+				<br>
+				<div class="comment">
+					<span id="{{ comment['id'] }}"></span>
+					<p class="body">{{ comment['body'] }}</p>
+					<p class="created">{{ comment['created'] }}</p>
+					<a href="/r/{{ room['name'] }}/comments/{{ post['id'] }}/comment/{{ comment['id'] }}">link</a>
+					<span><a href="/u/{{ comment['author_username'] }}">author</a></span>
+					<span><a href="/r/{{ post['room_name'] }}">room</a></span>
+					{% if g.user -%}
+					<span><a href="#">reply</a></span>
+					{% endif -%}
+					{% if g.user.username == comment['author_username'] -%}
+						<span id="{{ comment['id'] }}" onclick="reply_click(this.id)">edit</span> <span><a href="#">delete</a></span>
+					{% endif -%}
+					<span id="form-{{ comment['id'] }}"></span>
+				</div>
+			{% else -%}
+				<p>Comment not found</p>
+			{% endif -%}
+		{% else -%}
+			<p>Post not found</p>
+		{% endif -%}
+	{% else -%}
+		<p>Room not found</p>
+	{% endif -%}
+{% endblock -%}

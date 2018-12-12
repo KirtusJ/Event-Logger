@@ -13,7 +13,7 @@
 		<input type="submit" name="Submit">
 	</form>
 	<br>
-	<form class="user" action="/user/edit" method="POST" enctype="multipart/form-data">
+	<form class="user" action="/user/edit" method="POST">
 		<input type="hidden" name="user" value="update">
 		<input type="text" name="username" style="width: 400px; margin-bottom: 30px" value="{{ user['username'] }}">
 		<br>
@@ -24,7 +24,6 @@
 		{% else -%}
 			<input type="text" name="bio" style="width: 400px; margin-bottom: 30px" placeholder="Bio...">
 		{% endif -%}
-		
 		<br>
 		<input type="password" name="password" style="width: 400px; margin-bottom: 30px" placeholder="Password...">
 		<br>

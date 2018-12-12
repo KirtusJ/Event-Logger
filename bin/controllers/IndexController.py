@@ -8,8 +8,8 @@ try:
 	from bin.models.user import User
 	from bin.models.post import Post
 	from bin.models.room import Room
-except Exception as e:
-	print(f"Error importing in controllers/IndexController.py: {e}")
+except ImportError as IE:
+	print(f"Error importing in controllers/IndexController.py: {IE}")
 
 def show():
 	"""

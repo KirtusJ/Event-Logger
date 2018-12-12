@@ -1,7 +1,6 @@
 try:
 	from . import routes
-	import flask
-	from flask import render_template
+	from flask import render_template, request
 	from bin.controllers import ErrorController, UserController
 	from flask_login import current_user
 except ImportError as IE:
@@ -14,10 +13,10 @@ def load_logged_in_user():
 	Sends to UserController
 	function getUser()
 	"""
-	return UserController.getUser()
+	return UserController.get()
 
 @routes.route('/u/<username>/')
-def showUser(username):
+def show_user(username):
 	"""
 	Sends username to UserController
 	function show()
@@ -26,28 +25,28 @@ def showUser(username):
 
 @routes.route('/register')
 @routes.route('/signup')
-def createUserView():
+def create_user_view():
 	""" Renders the register template """
 	return render_template('user/register.htm.j2')
 
 @routes.route('/login')
 @routes.route('/signin')
-def createSessionView():
+def create_user_session_view():
 	""" Renders the login template """
 	return render_template('user/login.htm.j2')
 
 @routes.route('/logout')
 @UserController.login_required
-def destroySession():
+def destroy_user_session():
 	"""
 	Varifies current_user
 	Sends to UserController
 	function logout()
 	"""
-	return UserController.logout()
+	return UserController.destroy_session()
 
 @routes.route('/auth', methods=['POST', 'GET'])
-def createSessionOrUser():
+def create_session_or_user():
 	"""
 	Acquires form method, and identity of the form
 	If the form validates, its values will be sent to UserController 
@@ -58,17 +57,17 @@ def createSessionOrUser():
 	if the identity of the form is login, sent to
 	function login()
 	"""
-	if flask.request.method == "POST":
+	if request.method == "POST":
 		if not current_user.is_authenticated:
-			if flask.request.form["auth"] == "register":
-				username = flask.request.form["username"]
-				email = flask.request.form["email"]
-				password = flask.request.form["password"]
-				return UserController.register(username,email,password)
-			elif flask.request.form["auth"] == "login":
-				username = flask.request.form["username"]
-				password = flask.request.form["password"]
-				return UserController.login(username,password)
+			if request.form["auth"] == "register":
+				username = request.form["username"]
+				email = request.form["email"]
+				password = request.form["password"]
+				return UserController.create_user(username,email,password)
+			elif request.form["auth"] == "login":
+				username = request.form["username"]
+				password = request.form["password"]
+				return UserController.create_session(username,password)
 		else:
 			return ErrorController.error("403"), 403
 	else:
@@ -76,7 +75,7 @@ def createSessionOrUser():
 
 @routes.route('/u/<username>/ban/')
 @UserController.admin_required
-def banUser(username):
+def ban_user(username):
 	"""
 	Verifies current_user is admin
 	Sends username to UserController
@@ -86,7 +85,7 @@ def banUser(username):
 
 @routes.route('/u/<username>/follow/')
 @UserController.login_required
-def followUser(username):
+def follow_user(username):
 	"""
 	Verifies current_user
 	Sends username to UserController
@@ -96,7 +95,7 @@ def followUser(username):
 
 @routes.route('/u/<username>/unfollow/')
 @UserController.login_required
-def unfollowUser(username):
+def unfollow_user(username):
 	"""
 	Verifies current_user
 	Sends username to UserController
@@ -104,19 +103,9 @@ def unfollowUser(username):
 	"""
 	return UserController.unfollow(username)
 
-@routes.route('/room/<id>/subscribe/')
-@UserController.login_required
-def subscribeRoom(id):
-	return UserController.subscribe(id)
-
-@routes.route('/room/<id>/unsubscribe/')
-@UserController.login_required
-def unsubscribeRoom(id):
-	return UserController.unsubscribe(id)
-
 @routes.route('/user/edit', methods=['GET','POST'])
 @UserController.login_required
-def updateUser():
+def update_user():
 	"""
 	Verifies current_user
 	
@@ -129,28 +118,17 @@ def updateUser():
 	function updateView()
 
 	"""
-	if flask.request.method == "POST":
-		if flask.request.form["user"] == "update":
-			username = flask.request.form["username"]
-			email = flask.request.form["email"]
-			bio = flask.request.form["bio"]
-			password = flask.request.form["password"]
+	if request.method == "POST":
+		if request.form["user"] == "update":
+			username = request.form["username"]
+			email = request.form["email"]
+			bio = request.form["bio"]
+			password = request.form["password"]
 			return UserController.update(username,email,bio,password)
 		else:
-			profile_picture = flask.request.files["file"]
-			return UserController.updateProfilePicture(profile_picture)
-	elif flask.request.method == "GET":
-		return UserController.updateView()
+			profile_picture = request.files["file"]
+			return UserController.update_profile_picture(profile_picture)
+	elif request.method == "GET":
+		return UserController.update_view()
 	else:
 		return ErrorController.error("404"), 404
-
-@routes.route('/admin/')
-@UserController.admin_required
-def admin():
-	"""
-	Verifies current_user is admin
-	Currently just appends "admin"
-	Plan to send to AdminController
-	function show()
-	"""
-	return "admin"

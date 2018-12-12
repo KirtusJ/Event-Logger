@@ -13,7 +13,7 @@
 		$(document).ready(function() {
 			try {
 				$.getJSON("{{ url_for('static', filename='api/room/') }}{{ room['id'] }}.json", function(json) {
-					console.log("Successully acquired {{ room['id'] }} json")
+					console.log("Successully acquired Room: {{ room['id'] }}")
 				});
 			} catch (e) {
 				console.log(e)

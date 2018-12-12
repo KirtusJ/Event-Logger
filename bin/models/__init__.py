@@ -23,6 +23,7 @@ try:
 	from .user import User
 	from .post import Post
 	from .room import Room
+	from .comment import Comment
 except Exception as e:
 	print(f"Error loading models: {e}")
 
