@@ -23,7 +23,7 @@ try:
 except ImportError as IE:
 	print(f"Error importing in controllers/CommentController.py: {IE}")
 
-def create_comment(_room, _post, _body):
+def create(_room, _post, _body):
 	try: room = Room.query.filter_by(name=_room.lower()).first()
 	except: room = None
 
@@ -61,9 +61,9 @@ def create_comment(_room, _post, _body):
 			with open(file, 'w') as json_file:
 				json.dump(data, json_file)
 	flash(u"Commented created successfully")
-	return redirect(url_for('routes.showPost', room=post.room_name,id=post.id))
+	return redirect(url_for('routes.show_post', room=post.room_name,id=post.id))
 
-def show_comment(_room, _post, _comment):
+def show(_room, _post, _comment):
 	try: room = Room.query.filter_by(name=_room.lower()).first()
 	except: room = None
 

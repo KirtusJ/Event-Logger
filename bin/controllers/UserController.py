@@ -110,12 +110,12 @@ def create_session(_username, _password):
 		user = None
 	if user is None:
 		flash(u"Username {name} doesn't exist".format(name=_username), 'error')
-		return redirect(url_for('routes.createSessionView'))
+		return redirect(url_for('routes.create_user_session_view'))
 	try:
 		if user.check_password(_username, _password):
 			if "banned" in user.roles:
 				flash(u'Account {name} has been banned'.format(name=_username), 'error')
-				return redirect(url_for('routes.createSessionView'))
+				return redirect(url_for('routes.create_user_session_view'))
 			try:
 				login_user(user)
 			except Exception as e:
@@ -125,7 +125,7 @@ def create_session(_username, _password):
 			return redirect(url_for('routes.index'))
 	except:
 		flash(u'Incorrect password', 'error')
-		return redirect(url_for('routes.createSessionView'))
+		return redirect(url_for('routes.create_user_session_view'))
 
 def create_user(_username, _email, _password):
 	"""
@@ -137,10 +137,10 @@ def create_user(_username, _email, _password):
 	email = User.query.filter_by(email=_email).first()
 	if email is not None:
 		flash(u'Email {email} is already in use'.format(email=_email), 'error')
-		return redirect(url_for('routes.createUserView'))
+		return redirect(url_for('routes.create_user_view'))
 	if username is not None:
 		flash(u'Username {name} already exists'.format(name=_username), 'error')
-		return redirect(url_for('routes.createUserView'))
+		return redirect(url_for('routes.create_user_view'))
 	try:
 		user = User(username=_username, email=_email, roles=f"{User.default_role}")
 		user.set_password(_password)
@@ -167,7 +167,7 @@ def create_user(_username, _email, _password):
 			with open(file, "w") as json_file:
 				json.dump(data, json_file)
 
-	return redirect(url_for('routes.createSessionView'))
+	return redirect(url_for('routes.create_user_session_view'))
 
 def destroy_session():
 	"""
@@ -228,7 +228,7 @@ def ban(_username):
 		data["roles"] = user.roles
 		with open(file, "wt") as json_file:
 			json.dump(data, json_file)
-	return redirect(url_for("routes.showUser", username=user.username))
+	return redirect(url_for("routes.show_user", username=user.username))
 
 def destroy(_username):
 	"""
@@ -269,7 +269,7 @@ def follow(_username):
 			db.session.rollback()
 			logging.error(f"{e}")
 			return ErrorController.error(e)
-		return redirect(url_for("routes.showUser", username=user.username))
+		return redirect(url_for("routes.show_user", username=user.username))
 	flash(u"User: {username} doesn't exist".format(username=_username))
 	return redirect(url_for("routes.index"))
 
@@ -290,7 +290,7 @@ def unfollow(_username):
 			db.session.rollback()
 			logging.error(f"{e}")
 			return ErrorController.error(e)
-		return redirect(url_for("routes.showUser", username=user.username))
+		return redirect(url_for("routes.show_user", username=user.username))
 	flash(u"User: {username} doesn't exist".format(username=_username))
 	return redirect(url_for("routes.index"))
 
@@ -323,14 +323,14 @@ def update(_username, _email, _bio, _password):
 		current_user.check_password(current_user.username, _password)
 	except Exception as e:
 		flash(u"Incorrect password")
-		return redirect(url_for("routes.updateUser"))
+		return redirect(url_for("routes.update_user"))
 	try:
 		updated_username = False
 		if not current_user.username == _username: 
 			username = User.query.filter_by(username=_username).first()
 			if username is not None:
 				flash(u'Username: {username} already in use'.format(username=_username))
-				return redirect(url_for('routes.updateUser'))
+				return redirect(url_for('routes.update_user'))
 			posts = Post.query.filter_by(author=current_user.id).all()
 			for post in posts:
 				try:
@@ -345,7 +345,7 @@ def update(_username, _email, _bio, _password):
 			email = User.query.filter_by(email=_email).first()
 			if email is not None:
 				flash(u'Email: {email} already in use'.format(email=_email))
-				return redirect(url_for("routes.updateUser"))
+				return redirect(url_for("routes.update_user"))
 			try:
 				current_user.set_email(_email)
 				updated_email = True
@@ -382,12 +382,12 @@ def update(_username, _email, _bio, _password):
 			data["bio"] = current_user.bio
 		with open(file, "wt") as json_file:
 			json.dump(data, json_file)
-	return redirect(url_for('routes.showUser', username=current_user.username))
+	return redirect(url_for('routes.show_user', username=current_user.username))
 
 def update_profile_picture(_profile_picture):
 	if _profile_picture.filename == '':
 		flash(u"No file uploaded")
-		return redirect(url_for("routes.updateUser"))
+		return redirect(url_for("routes.update_user"))
 	else:
 		try:
 			with store_context(main.AppClass.store):
@@ -409,8 +409,8 @@ def update_profile_picture(_profile_picture):
 			with open(file, "wt") as json_file:
 				json.dump(data, json_file)
 
-	return redirect(url_for('routes.showUser', username=current_user.username))
+	return redirect(url_for('routes.show_user', username=current_user.username))
 def update_view():
 	if not current_user.is_authenticated:
-		return redirect(url_for('routes.createSessionView'))
+		return redirect(url_for('routes.create_user_session_view'))
 	return render_template("user/edituser.htm.j2", user=current_user)

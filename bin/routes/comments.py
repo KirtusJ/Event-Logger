@@ -8,16 +8,24 @@ except ImportError as IE:
 @routes.route('/r/<room>/comments/<post>/comment/new', methods=['POST','GET'])
 @UserController.login_required
 def create_comment(room,post):
+	"""
+	Sends room, post, and body to CommentController
+	function show()
+	"""
 	if request.method == "POST":
 		if request.form["comment"] == "create":
 			body = request.form["body"]
-			return CommentController.create_comment(room, post, body)
+			return CommentController.create(room, post, body)
 	else:
 		return ErrorController.error("404"), 404
 
 @routes.route('/r/<room>/comments/<post>/comment/<comment>/reply', methods=['POST','GET'])
 @UserController.login_required
 def reply_comment(room, post, comment):
+	"""
+	Sends room, post, comment, and body to CommentController
+	function reply()
+	"""
 	if request.method == "POST":
 		if request.form["comment"] == "reply":
 			body = request.form["body"]
@@ -27,7 +35,11 @@ def reply_comment(room, post, comment):
 
 @routes.route('/r/<room>/comments/<post>/comment/<comment>', methods=['POST','GET'])
 def show_comment(room, post, comment):
+	"""
+	Sends room, post, and comment to CommentController
+	function show()
+	"""
 	if request.method == "GET":
-		return CommentController.show_comment(room, post, comment)
+		return CommentController.show(room, post, comment)
 	else:
 		return ErrorController.error("404"), 404

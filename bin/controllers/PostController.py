@@ -55,7 +55,7 @@ def create(_title, _body, _room):
 		room = None
 	if room is None:
 		flash(u"Room: {room} doesn't exist".format(room=_room))
-		return redirect(url_for('routes.showUser', username=current_user.username))
+		return redirect(url_for('routes.show_user', username=current_user.username))
 	else:
 		post = Post(title=_title, body=_body)
 	try:
@@ -79,7 +79,7 @@ def create(_title, _body, _room):
 			open(file, "w")
 			with open(file, "w") as json_file:
 				json.dump(data, json_file)
-	return redirect(url_for('routes.showPost',room=post.room_name,id=post.id))
+	return redirect(url_for('routes.show_post',room=post.room_name,id=post.id))
 
 def destroy(_id):
 	"""
@@ -144,7 +144,7 @@ def update(_id, _title, _body):
 					data["body"] = post.body
 				with open(file, "wt") as json_file:
 					json.dump(data, json_file)
-			return redirect(url_for('routes.showPost', room=post.room_name, id=post.id))
+			return redirect(url_for('routes.show_post', room=post.room_name, id=post.id))
 		else:
 			return ErrorController.error("403"), 403
 	else:

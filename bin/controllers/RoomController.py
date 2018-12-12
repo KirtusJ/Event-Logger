@@ -81,7 +81,7 @@ def create(_name, _description):
 			open(file, "w")
 			with open(file, "w") as json_file:
 				json.dump(data, json_file)
-	return redirect(url_for('routes.showRoom', name=room.name))
+	return redirect(url_for('routes.show_room', name=room.name))
 
 def destroy(_name):
 	"""
@@ -151,7 +151,7 @@ def update(_id, _name, _description):
 					data["description"] = room.description
 				with open(file, "wt") as json_file:
 					json.dump(data, json_file)
-			return redirect(url_for('routes.showRoom', name=room.name))
+			return redirect(url_for('routes.show_room', name=room.name))
 		else:
 			return ErrorController.error("403"), 403
 	else:
@@ -189,7 +189,7 @@ def subscribe(_id):
 			db.session.rollback()
 			logging.error(f"{e}")
 			return ErrorController.error(e)
-		return redirect(url_for("routes.showRoom", name=room.name))
+		return redirect(url_for("routes.show_room", name=room.name))
 	flash(u"Room: {id} doesn't exist".format(id=_id))
 	return redirect(url_for("routes.index"))
 	
@@ -210,6 +210,6 @@ def unsubscribe(_id):
 			db.session.rollback()
 			logging.error(f"{e}")
 			return ErrorController.error(e)
-		return redirect(url_for("routes.showRoom", name=room.name))
+		return redirect(url_for("routes.show_room", name=room.name))
 	flash(u"Room: {id} doesn't exist".format(id=_id))
 	return redirect(url_for("routes.index"))
