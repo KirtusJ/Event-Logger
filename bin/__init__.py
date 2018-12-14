@@ -22,16 +22,19 @@ def http_error(e):
 
 class AppClass():
     app = Flask(__name__, instance_relative_config=True)
+    ip = config.ip
+    port = config.port
+    host = config.host
+    project_name = config.project_name
     try:
         store = HttpExposedFileSystemStore(
             path='bin/static/img/',
             prefix='static/img/',
             host_url_getter=lambda:
-                config.host
+                AppClass.host
         )
     except Exception as e:
         print(f"Error initializing store. Probably forgot to setup config.py. {e}")
-    app_config = config
 
 def create_app():
     """

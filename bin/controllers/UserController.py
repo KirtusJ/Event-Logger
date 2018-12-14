@@ -39,7 +39,7 @@ def login_required(view):
 	@functools.wraps(view)
 	def wrapped_view(**kwargs):
 		if current_user is None:
-			return redirect(url_for('routes/login'))
+			return redirect(url_for('routes.index'))
 		return view(**kwargs)
 	return wrapped_view
 

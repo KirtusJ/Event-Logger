@@ -1,6 +1,6 @@
 {% extends 'layout/default.htm.j2' -%}
 
-{% block title -%}List of rooms{% endblock -%}
+{% block title -%}{{ project[0] }}: list of rooms{% endblock -%}
 
 {% block content -%}
 	{% if g.user -%}

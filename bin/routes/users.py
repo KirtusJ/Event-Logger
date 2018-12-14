@@ -16,6 +16,7 @@ def load_logged_in_user():
 	return UserController.get()
 
 @routes.route('/u/<username>/')
+@UserController.login_required
 def show_user(username):
 	"""
 	Sends username to UserController

@@ -43,3 +43,21 @@ def show_comment(room, post, comment):
 		return CommentController.show(room, post, comment)
 	else:
 		return ErrorController.error("404"), 404
+
+@routes.route('/r/<room>/comments/<post>/comment/<comment>/edit', methods=['POST','GET'])
+@UserController.login_required
+def edit_comment(room, post, comment):
+	if request.method == "GET":
+		return "get"
+	elif request.method == "POST":
+		return "post"
+	else:
+		return ErrorController.error("404"), 404
+
+@routes.route('/r/<room>/comments/<post>/comment/<comment>/delete', methods=['POST','GET'])
+@UserController.login_required
+def destroy_comment(room, post, comment):
+	if request.method == "POST":
+		return "post"
+	else:
+		return ErrorController.error("404"), 404

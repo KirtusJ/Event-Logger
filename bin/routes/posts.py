@@ -34,6 +34,7 @@ def destroy_post(id):
 	return PostController.destroy(id)
 
 @routes.route('/r/<room>/comments/<id>/')
+@UserController.login_required
 def show_post(room, id):
 	"""
 	Sends post id to PostController 

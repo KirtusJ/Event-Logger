@@ -1,12 +1,15 @@
 try:
 	from . import routes
-	from bin.controllers import IndexController
+	from bin.controllers import IndexController, UserController
 except ImportError as IE:
 	print(f"Error importing in routes/index.py: {IE}")
 
-@routes.route('/index')
-@routes.route('/home')
+@routes.context_processor
+def init_project():
+	return IndexController.init()
+
 @routes.route('/')
+@UserController.login_required
 def index():
 	"""
 	Sends to IndexController 
@@ -15,6 +18,7 @@ def index():
 	return IndexController.show()
 
 @routes.route('/users')
+@UserController.login_required
 def users():
 	"""
 	Sends to IndexController 
@@ -23,6 +27,7 @@ def users():
 	return IndexController.users()
 
 @routes.route('/rooms')
+@UserController.login_required
 def rooms():
 	"""
 	Sends to IndexController

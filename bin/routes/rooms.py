@@ -6,6 +6,7 @@ except ImportError as IE:
 	print(f"Error importing in routes/rooms.py: {IE}")
 
 @routes.route('/r/<name>/', methods=['POST', 'GET'])
+@UserController.login_required
 def show_room(name):
 	"""
 	Sends name to RoomController
